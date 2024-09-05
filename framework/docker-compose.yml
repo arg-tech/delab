@@ -2,23 +2,103 @@
 
 services:
 
+  nginx-proxy:
+    image: nginxproxy/nginx-proxy
+    container_name: nginxproxy
+    profiles: 
+      - gpu
+      - cpu
+      - analytics
+    ports:
+      - "80:80"
+    environment: 
+      - DEFAULT_HOST=delab.localhost
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+    networks:
+      - delab
+      
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    restart: unless-stopped
+    environment: 
+      - VIRTUAL_HOST=delab.localhost
+      - VIRTUAL_PATH=/
+    networks: 
+      - delab
+
+  #analytics module
+  delab_analytics:
+    build: 
+      context: ./delab_analytics/
+      dockerfile: Dockerfile
+    container_name: analytics
+    image: delab/analytics
+    hostname: delab_analytics
+    profiles: 
+      - gpu
+      - cpu
+      - analytics
+    restart: unless-stopped
+    ports: 
+      - 8840:8840
+    env_file:
+      - .env
+    environment:
+      - NLTK_DATA=/root/nltk_data/
+      - VIRTUAL_HOST=analytics.localhost
+      - VIRTUAL_PATH=/
+      - VIRTUAL_PORT=8840
+    volumes: 
+      - ./../models:/delab/app/models/
+    networks:
+      - delab
+
+  #llm module, generic
+  delab_llm: 
+    image: ghcr.io/abetlen/llama-cpp-python:latest
+    container_name: llm
+    hostname: delab_llm
+    profiles: 
+      - analytics
+    restart: unless-stopped
+    ports: 
+      - 8841:8000
+    env_file:
+      - .env
+    environment:
+      - HOST=0.0.0.0
+      - MODEL=/models/${LLM_MODEL}
+      - VIRTUAL_HOST=llm.localhost
+      - VIRTUAL_PATH=/
+      - VIRTUAL_PORT=8841
+    volumes: 
+      - ./../models:/models
+    networks: 
+      - delab
+
   #llm module GPU
   delab_llm_gpu: 
     build: 
-      context: delab_llm/gpu
+      context: ./delab_llm/gpu
       dockerfile: Dockerfile
     container_name: llm_gpu
     image: delab/llm_gpu
+    hostname: delab_llm
     profiles: 
       - gpu
     restart: unless-stopped
     ports: 
-      - 3000:8000
+      - 8841:8000
     env_file:
       - .env
     environment:
       - USE_MLOCK=0 #do not keep the model in RAM
       - MODEL=/var/model/${LLM_MODEL}
+      - VIRTUAL_HOST=llm.localhost
+      - VIRTUAL_PATH=/
+      - VIRTUAL_PORT=8841
     volumes: 
       - ./../models:/var/model
     deploy:
@@ -29,25 +109,61 @@ services:
               count: 1
               capabilities:
                 - gpu
-
+    networks:
+      - delab
 
   #llm module CPU
   delab_llm_cpu: 
     build: 
-      context: delab_llm/cpu
+      context: ./delab_llm/cpu
       dockerfile: Dockerfile
     container_name: llm_cpu
     image: delab/llm_cpu
+    hostname: delab_llm
     profiles: 
       - cpu
     restart: unless-stopped
     ports: 
-      - 3000:8000
+      - 8841:8000
     env_file:
       - .env
     environment:
       - USE_MLOCK=0 #do not keep the model in RAM
       - MODEL=/var/model/${LLM_MODEL}
+      - VIRTUAL_HOST=llm.localhost
+      - VIRTUAL_PATH=/
+      - VIRTUAL_PORT=8841
     volumes: 
       - ./../models:/var/model
+    networks:
+      - delab
 
+  #rstudio
+  rstudio:
+    image: rocker/ml
+    restart: unless-stopped
+    hostname: delab_rstudio
+    profiles: 
+      - cpu
+      - gpu
+      - analytics
+      - rstudio
+    env_file:
+      - .env
+    environment:
+      - USER=${RSTUDIO_USER}
+      - PASSWORD=${RSTUDIO_PASSWORD}
+      - ROOT="FALSE"
+      - RSTUDIO_CONFIG_HOME="/home/delab/.config/rstudio/"
+    ports:
+      - 8787:8787
+    volumes:
+      - ./delab_analytics/rscripts_api:/home/delab/rscripts_api
+    #  - ./rstudio/config:/home/delab/.config/rstudio/
+      - ./../models:/home/delab/models
+    networks:
+      - delab
+
+networks:
+  delab:
+    driver: host
