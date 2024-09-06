@@ -53,7 +53,7 @@ function(texts = ""){
 #* Return analytics values
 #* @tag analytics
 #* @post /analytics
-#* @params analytics The specific analytics, either sentiment, justification, cosine, llm, all (default)
+#* @params analytics The specific analytics, either sentiment, justification, cosine, all (default)
 #* @serializer json
 function(texts = "", analytics = "all"){
   
@@ -96,10 +96,8 @@ function(texts = "", analytics = "all"){
     print("Finished analysis of cosine.")
   }
   
-  #------------------llm
-  if (analytics == "llm"){
-    
-    source("./functions/delab_llm.R")
+  #------------------inference
+  if(analytics == "inference"){
     
     
   }
@@ -137,3 +135,47 @@ function(texts = "", analytics = "all"){
   #response
   list(df = out_analytics)
 }
+
+
+######################### C. INFERENCE
+#* Return intervention probability
+#* @tag inference
+#* @post /inference
+#* @serializer json
+function(texts = ""){
+
+  #get sentiment
+  source("./functions/delab_sentiment.R")
+  out_sent <- delab_sentiment(texts)
+  print("Finished analysis of sentiment.")
+  
+  #get justification
+  source("./functions/delab_udpipe.R")
+  out_udpipe <- delab_udpipe(texts)
+  
+  source("./functions/delab_justification.R")
+  out_just <- delab_justification(out_udpipe)
+  print("Finished analysis of justification.")
+  
+  #get cosine
+  source("./functions/delab_embeddings.R")
+  out_embeddings <- delab_embeddings(texts)
+  
+  source("./functions/delab_cosine.R")
+  out_cosine <- delab_cosine(out_embeddings)
+  print("Finished analysis of cosine.")
+  
+  #merge
+  out_analytics <- merge(out_sent, out_just, by = c("texts"))
+  out_analytics <- merge(out_analytics, out_cosine, by = c("texts"))
+  
+  #inference
+  source("./functions/delab_inference.R")
+  out_inference <- delab_inference(out_analytics)
+  
+  #response
+  list(df = out_inference)
+  
+}
+
+  

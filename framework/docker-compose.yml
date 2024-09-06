@@ -139,8 +139,9 @@ services:
       - delab
 
   #rstudio
-  rstudio:
+  delab_rstudio:
     image: rocker/ml
+    container_name: rstudio
     restart: unless-stopped
     hostname: delab_rstudio
     profiles: 
@@ -159,6 +160,7 @@ services:
       - 8787:8787
     volumes:
       - ./delab_analytics/rscripts_api:/home/delab/rscripts_api
+      - ./../data:/home/delab/data
     #  - ./rstudio/config:/home/delab/.config/rstudio/
       - ./../models:/home/delab/models
     networks:
@@ -166,4 +168,4 @@ services:
 
 networks:
   delab:
-    driver: host
+    driver: bridge
