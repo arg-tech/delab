@@ -5,41 +5,57 @@
 
 ######################### packages
 library("reticulate")
+library("httr2")
+library("jsonlite")
+library("stringr")
+library("purrr")
 
 
-######################### function prediction sentiments
-get_llmprob <- function(text){
+######################### function
+delab_llm <- function(texts){
   
-  #path to local model
-  path_to_model <- "./models/ggml_llava-v1.5-7b/ggml-model-f16.gguf"
+  ######################### prompt
+  #build prompt
+  system_content <- "Your are a social media moderator. Your role is to help participants in fostering a constructive and inclusive discussions." 
+  user_content <- "Given the provided conversation, formulate a helpful response. Do not address users directly. Keep your moderation intervention as brief as possible."
+  user_content <- str_c(user_content, "\n\nThe conversation is:\n", 
+                        str_c(texts, collapse = "\n"), 
+                        "\n</conversation>")
+  #cat(user_content)
   
-  #call Python transformers pipeline
-  llama <- reticulate::import("llama_cpp")
+  model <- "gpt-3.5-turbo"
+  prompt_1 <- list(role = "system", 
+                   content = system_content)
+  prompt_2 <- list(role = "user", 
+                   content = user_content)
+  prompt <- list(model = model, 
+                 messages = list(prompt_1, prompt_2))
   
-  possibleError <- tryCatch(
-    llm_model <- llama$Llama(model_path = path_to_model,
-                             n_gpu_layers = 1L,
-                             chat_format = "chatml"),
-    error = function(e) e
-  )
-  if (inherits(possibleError, "error")){
-    
-    llm_model <- llama$Llama$from_pretrained(
-      repo_id="Qwen/Qwen1.5-0.5B-Chat-GGUF",
-      filename="*q8_0.gguf",
-      verbose=False
-    )
-    
-  }
+  ######################### API request
+  #make request
+  url <- request('http://172.18.0.1:8841/')
   
-  #JSON scheme format
-  llm_model$create_chat_completion(
-    messages = list(dict(role = "system", 
-                         content = "You are a helpful assistant."), 
-                    dict(role = "user", 
-                         content = "Who won the world series in 2019?")), 
-    response_format = dict(type = "json_object"), 
-    temperature = 0.7
-  )
+  req <- url |>
+    req_url_path_append("v1/chat/completions") |>
+    req_body_json(list(model = model, 
+                       messages = list(prompt_1, prompt_2)))
+  
+  #test request, if required
+  # req |>
+  #   req_dry_run()
+  
+  #actual request
+  current_request <- req |>
+    req_perform()
+  
+  #extract data
+  current_raw <- current_request |>
+    resp_body_json() |> 
+    pluck("choices") |>
+    pluck(1) |> 
+    pluck("message") |> 
+    pluck("content")
+  
+  return(current_raw)
   
 }

@@ -41,6 +41,8 @@ RUN install2.r --error --skipinstalled --ncpus -1 \
   plumber \
   keras3 \
   lsa \
+  httr2 \
+  jsonlite \
   && rm -rf /tmp/downloaded_packages
 
 ## Remove this comment to always bust the Docker cache at this step
