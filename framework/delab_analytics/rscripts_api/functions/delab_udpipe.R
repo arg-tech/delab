@@ -31,9 +31,9 @@ delab_udpipe <- function(texts){
   df$language <- detect_language(df$text)
   
   ######################### separate languages
-  df_en <- df[df$language == "en",]
-  df_de <- df[df$language == "de",]
-  df_other <- df[df$language != "en" & df$language != "de", ]
+  df_en <- df[df$language == "en" & !is.na(df$language),]
+  df_de <- df[df$language == "de" & !is.na(df$language),]
+  df_other <- df[(df$language != "en" & df$language != "de") | is.na(df$language), ]
   
   ######################### annotate ENGLISH 
   if (nrow(df_en) >= 1){

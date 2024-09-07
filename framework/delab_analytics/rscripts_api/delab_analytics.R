@@ -121,9 +121,10 @@ function(texts = "", analytics = "all"){
     print("Finished analysis of cosine.")
     
     #merge
-    out_analytics <- merge(out_sent, out_just, by = c("texts"))
-    out_analytics <- merge(out_analytics, out_cosine, by = c("texts"))
+    out_one <- merge(out_sent, out_just, by = c("texts"))
+    out_two <- merge(out_one, out_cosine, by = c("texts"))
     
+    out_analytics <- out_two
   }
   
   #response
@@ -160,12 +161,12 @@ function(texts = ""){
   print("Finished analysis of cosine.")
   
   #merge
-  out_analytics <- merge(out_sent, out_just, by = c("texts"))
-  out_analytics <- merge(out_analytics, out_cosine, by = c("texts"))
+  out_one <- merge(out_sent, out_just, by = c("texts"))
+  out_two <- merge(out_one, out_cosine, by = c("texts"))
   
   #inference
   source("./functions/delab_inference.R")
-  out_inference <- delab_inference(out_analytics)
+  out_inference <- delab_inference(out_two)
   
   #response
   list(df = out_inference)
@@ -202,12 +203,12 @@ function(texts = ""){
   print("Finished analysis of cosine.")
   
   #merge
-  out_analytics <- merge(out_sent, out_just, by = c("texts"))
-  out_analytics <- merge(out_analytics, out_cosine, by = c("texts"))
+  out_one <- merge(out_sent, out_just, by = c("texts"))
+  out_two <- merge(out_one, out_cosine, by = c("texts"))
   
   #inference
   source("./functions/delab_inference.R")
-  out_inference <- delab_inference(out_analytics)
+  out_inference <- delab_inference(out_two)
   print("Finished prediction inference.")
 
   #check if user provides intervention threshold
