@@ -11,7 +11,7 @@ server <- function(input, output) {
   #load conversation data
   load("../data/conv_delab.rda")
   
-  #keep only conversations with at least 2 posts
+  #keep only conversations with at least XX posts
   conv_delab <- conv_delab |> 
     group_by(conv_id, conv_path) |> 
     mutate(freq_posts = n()) |> 

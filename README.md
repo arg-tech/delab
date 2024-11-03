@@ -2,7 +2,7 @@
 
 ## Introduction
 
-This is the gitlab repository for the delab prototype. The main idea is to provide a container microservice infrastructure demonstrating the DeLab bot. This includes modules of
+This is the gitlab repository for the DeLab prototype. The main idea is to provide a container microservice infrastructure demonstrating the DeLab bot. This includes modules of
 
 1. ML inference: use pre-trained model
     a. generate features for prediction (currently sentiment, justification, cosine similarity)
@@ -26,11 +26,11 @@ Models 1, 2, 3, and 6 can be downloaded using the given public urls. Models 4 an
 
 Everything should work if the model folder is structured as follows: 
 
-![](	images/folders.png)
+![](images/folders.png)
 
 To build and run the framework, please install docker. Then navigate to the root folder and start the framework with 
 
-	docker compose -f framework/docker-compose.yml --profile analytics up
+`docker compose -f framework/docker-compose.yml --profile analytics up`
 
 The docker containers will be build, which takes a considerable amount of time. If you don't need the large rstudio container, please adjust the docker-compose.yml file and adjust the profile for the rstudio container. 
 
@@ -42,13 +42,21 @@ From outside the container network, the services documentation is available at
 
 The analytics run on port 8840, hence to send texts (at least two posts) to the service API, forward the request to port 8840 with only the texts as json:
 
-![](	images/curl.png)
+![](images/curl.png)
 
 By default, the complete pipeline is run (see above), i.e.. 
 
 - generate features for prediction (currently sentiment, justification, cosine similarity)
 - get ml based prediction for (user) interventions
 - LLM inference: use large language model to generate the (textual) intervention
+
+## Examples
+
+- `curl -X 'GET' 'http://analytics.localhost/alive'`
+- `curl -X 'POST' 'http://analytics.localhost/input' -H 'Content-Type: application/json' -d '{"texts":["this is a text", "and yet another one"]}'`
+- `curl -X 'POST' 'http://analytics.localhost/analytics' -H 'Content-Type: application/json' -d '{"texts":["this is a text", "and yet another one"]}'`
+- `curl -X 'POST' 'http://analytics.localhost:8840/inference' -H 'Content-Type: application/json' -d '{"texts":["this is a text", "and yet another one"]}'`
+- `curl -X 'POST' 'http://0.0.0.0:8840/llm' -H 'Content-Type: application/json' -d '{"texts":["this is a text", "and yet another one"]}'`
 
 ## Parameters
 

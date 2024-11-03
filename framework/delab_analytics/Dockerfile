@@ -7,9 +7,7 @@ LABEL project.title="Deliberation Laboratory (DeLab)"
 LABEL project.link="https://delab.uni-goettingen.de"
 LABEL source.docker="https://github.com/rstudio/plumber/blob/main/Dockerfile"
 
-# BEGIN rstudio/plumber layers
-
-# `rm` call removes `apt` cache
+# install sys packages and python
 RUN apt-get update -qq && apt-get install -y --no-install-recommends \
   git-core \
   libssl-dev \
@@ -21,11 +19,7 @@ RUN apt-get update -qq && apt-get install -y --no-install-recommends \
   python3 python3-dev python3-pip python3-venv \
   && rm -rf /var/lib/apt/lists/*
 
-# install Python
-#RUN /rocker_scripts/install_python.sh
-#RUN apt-get install python3 python3-dev python3-pip python3-venv
-
-# `rm` call removes install2.r's cache
+# install R packages
 RUN install2.r --error --skipinstalled --ncpus -1 \
   --repos https://ropensci.r-universe.dev --repos getOption \
   reticulate \
@@ -45,28 +39,19 @@ RUN install2.r --error --skipinstalled --ncpus -1 \
   jsonlite \
   && rm -rf /tmp/downloaded_packages
 
-## Remove this comment to always bust the Docker cache at this step
-## https://stackoverflow.com/a/55621942/591574
-#ADD https://github.com/rstudio/plumber/commits/ _docker_cache
+# install Python packages in virtual environment
+# ENV VIRTUAL_ENV=./opt/.venv
+# RUN python3 -m venv ${VIRTUAL_ENV}
+# ENV PATH="${VIRTUAL_ENV}/bin:$PATH"
 
-# install Python packages
-#RUN Rscript -e "reticulate::py_install('nltk')"
-#RUN Rscript -e "reticulate::py_install('torch')"
-#RUN Rscript -e "reticulate::py_install('transformers')"
-#RUN Rscript -e "reticulate::py_install('tensorflow')"
-#RUN Rscript -e "reticulate::py_install('tf-keras')"
-
-RUN pip3 install torch 
-RUN pip3 install transformers
-RUN pip3 install tensorflow
-RUN pip3 install tf-keras
-RUN pip3 install huggingface_hub
-RUN pip3 install nltk
+COPY ./requirements.txt ./requirements.txt
+RUN pip3 install -r requirements.txt --break-system-packages
 
 # set working directory
 WORKDIR /delab/app
 
 #install nltk stopwords
+# RUN python3 -c "import nltk; nltk.download('punkt'); nltk.download('punkt_tab'); nltk.download('stopwords')"
 RUN python3 -m nltk.downloader punkt 
 RUN python3 -m nltk.downloader punkt_tab
 RUN python3 -m nltk.downloader stopwords
