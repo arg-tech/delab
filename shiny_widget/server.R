@@ -9,7 +9,7 @@ server <- function(input, output) {
   
   ############################## data
   #load conversation data
-  load("../data/conv_delab.rda")
+  load("./../data/conv_delab.rda")
   
   #keep only conversations with at least XX posts
   conv_delab <- conv_delab |> 
