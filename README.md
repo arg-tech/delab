@@ -73,6 +73,11 @@ In the environment file, you can specify the intervention threshold; only when t
 
 There are two shiny apps to demonstrate the basic functionalities: 
 
+- demo_requests: let's users first choose a conversation from a dataset; then users can submit the conversation to the DeLab prototype
+- demo_userinput: similar to previous shiny app, but with the possibility to take part in the conversation
+
+Please note that the dataset must be provided by the user. Due to copyright issues, we're not allowed to provide a social media conversation corpus. 
+
 ## Funding
 
 The Deliberation Laboratory (DeLab) is funded by the Volkswagen Foundation under grant number 98 540. 
