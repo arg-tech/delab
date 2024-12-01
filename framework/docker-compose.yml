@@ -106,9 +106,8 @@ services:
         reservations:
           devices:
             - driver: nvidia
-              count: all
-              capabilities:
-                - gpu
+              capabilities: ["gpu"]
+              device_ids: ["0"]
     networks:
       - delab
 

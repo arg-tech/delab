@@ -1,5 +1,5 @@
 ################################################
-# Defining DeLab Analytics API Services        # 
+# Defining DeLab Analytics API Services        #
 ################################################
 
 
@@ -11,7 +11,7 @@
 #    a. sentiment
 #    b. justification
 #    c. topic cosine
-# C. ml prediction inference 
+# C. ml prediction inference
 # D. llm services
 
 
@@ -56,77 +56,109 @@ function(texts = ""){
 #* @params analytics The specific analytics, either sentiment, justification, cosine, all (default)
 #* @serializer json
 function(texts = "", analytics = "all"){
-  
+
   #------------------get sentiments
   if (analytics == "sentiment"){
     
+    #store order of texts
+    texts_df <- data.frame(texts)
+    texts_df$row_id <- seq(1, length(texts))
+
     source("./functions/delab_sentiment.R")
     out_sent <- delab_sentiment(texts)
+
+    #sequence of rows
+    out_sent <- merge(out_sent, texts_df, by = c("texts"))
+    out_sent <- out_sent[order(out_sent$row_id),]
     
     out_analytics <- out_sent
-    
+
     print("Finished analysis of sentiment.")
   }
-  
+
   #------------------get justification
   if (analytics == "justification"){
+
+    #store order of texts
+    texts_df <- data.frame(texts)
+    texts_df$row_id <- seq(1, length(texts))
     
     source("./functions/delab_udpipe.R")
     out_udpipe <- delab_udpipe(texts)
-    
+
     source("./functions/delab_justification.R")
     out_just <- delab_justification(out_udpipe)
     
+    #sequence of rows
+    out_just <- merge(out_just, texts_df, by = c("texts"))
+    out_just <- out_just[order(out_just$row_id),]
+
     out_analytics = out_just
-    
+
     print("Finished analysis of justification.")
   }
-  
+
   #------------------get cosine
   if (analytics == "cosine"){
+
+    #store order of texts
+    texts_df <- data.frame(texts)
+    texts_df$row_id <- seq(1, length(texts))
     
     source("./functions/delab_embeddings.R")
     out_embeddings <- delab_embeddings(texts)
-    
+
     source("./functions/delab_cosine.R")
     out_cosine <- delab_cosine(out_embeddings)
     
+    #sequence of rows
+    out_cosine <- merge(out_cosine, texts_df, by = c("texts"))
+    out_cosine <- out_cosine[order(out_cosine$row_id),]
+
     out_analytics = out_cosine
-    
+
     print("Finished analysis of cosine.")
   }
-  
+
   #------------------all
   if (analytics == "all"){
+
+    #store order of texts
+    texts_df <- data.frame(texts)
+    texts_df$row_id <- seq(1, length(texts))
     
     #get sentiment
     source("./functions/delab_sentiment.R")
     out_sent <- delab_sentiment(texts)
     print("Finished analysis of sentiment.")
-    
+
     #get justification
     source("./functions/delab_udpipe.R")
     out_udpipe <- delab_udpipe(texts)
-    
+
     source("./functions/delab_justification.R")
     out_just <- delab_justification(out_udpipe)
     print("Finished analysis of justification.")
-    
+
     #get cosine
     source("./functions/delab_embeddings.R")
     out_embeddings <- delab_embeddings(texts)
-    
+
     source("./functions/delab_cosine.R")
     out_cosine <- delab_cosine(out_embeddings)
     print("Finished analysis of cosine.")
-    
+
     #merge
     out_one <- merge(out_sent, out_just, by = c("texts"))
     out_two <- merge(out_one, out_cosine, by = c("texts"))
     
+    #sequence of rows
+    out_two <- merge(out_two, texts_df, by = c("texts"))
+    out_two <- out_two[order(out_two$row_id),]
+    
     out_analytics <- out_two
   }
-  
+
   #response
   list(df = out_analytics)
 }
@@ -139,38 +171,46 @@ function(texts = "", analytics = "all"){
 #* @serializer json
 function(texts = ""){
 
+  #store order of texts
+  texts_df <- data.frame(texts)
+  texts_df$row_id <- seq(1, length(texts))
+  
   #get sentiment
   source("./functions/delab_sentiment.R")
   out_sent <- delab_sentiment(texts)
   print("Finished analysis of sentiment.")
-  
+
   #get justification
   source("./functions/delab_udpipe.R")
   out_udpipe <- delab_udpipe(texts)
-  
+
   source("./functions/delab_justification.R")
   out_just <- delab_justification(out_udpipe)
   print("Finished analysis of justification.")
-  
+
   #get cosine
   source("./functions/delab_embeddings.R")
   out_embeddings <- delab_embeddings(texts)
-  
+
   source("./functions/delab_cosine.R")
   out_cosine <- delab_cosine(out_embeddings)
   print("Finished analysis of cosine.")
-  
+
   #merge
   out_one <- merge(out_sent, out_just, by = c("texts"))
   out_two <- merge(out_one, out_cosine, by = c("texts"))
   
+  #sequence of rows
+  out_two <- merge(out_two, texts_df, by = c("texts"))
+  out_two <- out_two[order(out_two$row_id),]
+  
   #inference
   source("./functions/delab_inference.R")
   out_inference <- delab_inference(out_two)
-  
+
   #response
   list(df = out_inference)
-  
+
 }
 
 
@@ -180,31 +220,39 @@ function(texts = ""){
 #* @post /llm
 #* @serializer json
 function(texts = ""){
+
+  #store order of texts
+  texts_df <- data.frame(texts)
+  texts_df$row_id <- seq(1, length(texts))
   
   #get sentiment
   source("./functions/delab_sentiment.R")
   out_sent <- delab_sentiment(texts)
   print("Finished analysis of sentiment.")
-  
+
   #get justification
   source("./functions/delab_udpipe.R")
   out_udpipe <- delab_udpipe(texts)
-  
+
   source("./functions/delab_justification.R")
   out_just <- delab_justification(out_udpipe)
   print("Finished analysis of justification.")
-  
+
   #get cosine
   source("./functions/delab_embeddings.R")
   out_embeddings <- delab_embeddings(texts)
-  
+
   source("./functions/delab_cosine.R")
   out_cosine <- delab_cosine(out_embeddings)
   print("Finished analysis of cosine.")
-  
+
   #merge
   out_one <- merge(out_sent, out_just, by = c("texts"))
   out_two <- merge(out_one, out_cosine, by = c("texts"))
+  
+  #sequence of rows
+  out_two <- merge(out_two, texts_df, by = c("texts"))
+  out_two <- out_two[order(out_two$row_id),]
   
   #inference
   source("./functions/delab_inference.R")
@@ -219,7 +267,7 @@ function(texts = ""){
     intervention_thresh <- Sys.getenv("INTERVENTION_THRESHOLD")
     intervention_thresh <- as.numeric(intervention_thresh)
   }
-  
+
   #stop if intervention threshold is larger than intervention probability
   if (intervention_thresh > out_inference$prob_intervention){
 
@@ -235,7 +283,7 @@ function(texts = ""){
       print("No llm response is generated.")
     }
   } else {
-    
+
     #run llm service
     source("./functions/delab_llm.R")
     out_llm <- delab_llm(texts)
@@ -244,5 +292,5 @@ function(texts = ""){
 
   #response
   list(df = data.frame(out_llm))
-  
+
 }
