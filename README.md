@@ -5,10 +5,8 @@
 This is the gitlab repository for the DeLab prototype. The main idea is to provide a container microservice infrastructure demonstrating the DeLab bot. This includes modules for
 
 1. ML inference: use pre-trained model
-
-    a. generate features for prediction (currently sentiment, justification, cosine similarity)
-    b. get ml based prediction for (user) interventions -> inference based on pre-trained model
-    
+- generate features for prediction (currently sentiment, justification, cosine similarity)
+- get ml based prediction for (user) interventions -> inference based on pre-trained model
 2. LLM text generation: use large language model to generate the (textual) intervention
 
 ## Installation
