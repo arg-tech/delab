@@ -63,7 +63,7 @@ By default, the complete pipeline is run (see above), i.e..
 - `curl -X 'POST' 'http://analytics.localhost/input' -H 'Content-Type: application/json' -d '{"texts":["this is a text", "and yet another one"]}'`
 - `curl -X 'POST' 'http://analytics.localhost/analytics' -H 'Content-Type: application/json' -d '{"texts":["this is a text", "and yet another one"]}'`
 	+ sentiments: `curl -X 'POST' 'http://analytics.localhost/analytics?analytics=sentiment' -H 'Content-Type: application/json' -d '{"texts":["this is a text", "and yet another one"]}'`
-	+ justification: `curl -X 'POST' 'http://analytics.localhost/analytics/analytics=justification' -H 'Content-Type: application/json' -d '{"texts":["this is a text", "and yet another one"]}'`
+	+ justification: `curl -X 'POST' 'http://analytics.localhost/analytics?analytics=justification' -H 'Content-Type: application/json' -d '{"texts":["this is a text", "and yet another one"]}'`
 	+ cosine: `curl -X 'POST' 'http://analytics.localhost/analytics?analytics=cosine' -H 'Content-Type: application/json' -d '{"texts":["this is a text", "and yet another one"]}'`
 - `curl -X 'POST' 'http://analytics.localhost:8840/inference' -H 'Content-Type: application/json' -d '{"texts":["this is a text", "and yet another one"]}'`
 - `curl -X 'POST' 'http://0.0.0.0:8840/llm' -H 'Content-Type: application/json' -d '{"texts":["this is a text", "and yet another one"]}'`
