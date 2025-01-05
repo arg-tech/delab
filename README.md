@@ -11,7 +11,7 @@ This is the gitlab repository for the DeLab prototype. The main idea is to provi
 
 ## Installation
 
-Before building and running the frameworks, the models folder need to be provided. The models folder is then hosted to the respective analytics and llm container. If you decide to use different models than the default models, you need to adjust the model filename and paths in the environment file (.env). Currently, the default models are: 
+Before building and running the frameworks, the models folder needs to be provided. The models folder is then hosted to the respective analytics and llm container. If you decide to use different models than the default models, you need to adjust the model filename and paths in the environment file (.env). Currently, the default models are: 
 
 1. udpipe
 	- [english-ewt-ud-2.5-191206.udpipe](https://github.com/jwijffels/udpipe.models.ud.2.5/blob/master/inst/udpipe-ud-2.5-191206/english-ewt-ud-2.5-191206.udpipe)
@@ -30,7 +30,7 @@ Everything should work if the model folder is structured as follows:
 
 To build and run the framework, please install docker. Then navigate to the root folder and start the framework with 
 
-`docker compose -f framework/docker-compose.yml --profile analytics up`
+`docker compose -f framework/docker-compose.yml --profile analytics up -d`
 
 The docker containers will be build, which takes a considerable amount of time. If you don't need the large rstudio container, please adjust the docker-compose.yml file and change the profile for the rstudio container. Using [portainer](https://docs.portainer.io/start/install-ce), a successful `docker compose` command should look like the following image: 
 
@@ -62,6 +62,9 @@ By default, the complete pipeline is run (see above), i.e..
 - `curl -X 'GET' 'http://analytics.localhost/alive'`
 - `curl -X 'POST' 'http://analytics.localhost/input' -H 'Content-Type: application/json' -d '{"texts":["this is a text", "and yet another one"]}'`
 - `curl -X 'POST' 'http://analytics.localhost/analytics' -H 'Content-Type: application/json' -d '{"texts":["this is a text", "and yet another one"]}'`
+	+ sentiments: `curl -X 'POST' 'http://analytics.localhost/analytics?analytics=sentiment' -H 'Content-Type: application/json' -d '{"texts":["this is a text", "and yet another one"]}'`
+	+ justification: `curl -X 'POST' 'http://analytics.localhost/analytics/analytics=justification' -H 'Content-Type: application/json' -d '{"texts":["this is a text", "and yet another one"]}'`
+	+ cosine: `curl -X 'POST' 'http://analytics.localhost/analytics?analytics=cosine' -H 'Content-Type: application/json' -d '{"texts":["this is a text", "and yet another one"]}'`
 - `curl -X 'POST' 'http://analytics.localhost:8840/inference' -H 'Content-Type: application/json' -d '{"texts":["this is a text", "and yet another one"]}'`
 - `curl -X 'POST' 'http://0.0.0.0:8840/llm' -H 'Content-Type: application/json' -d '{"texts":["this is a text", "and yet another one"]}'`
 
