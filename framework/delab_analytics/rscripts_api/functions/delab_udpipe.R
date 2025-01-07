@@ -34,6 +34,7 @@ delab_udpipe <- function(texts){
   df_en <- df[df$language == "en" & !is.na(df$language),]
   df_de <- df[df$language == "de" & !is.na(df$language),]
   df_other <- df[(df$language != "en" & df$language != "de") | is.na(df$language), ]
+  df_other$sentence <- df_other$texts
   
   ######################### annotate ENGLISH 
   if (nrow(df_en) >= 1){
@@ -98,22 +99,39 @@ delab_udpipe <- function(texts){
   ######################### create missing datasets
   #de
   if (!exists("df_de_anno")){
-    df_de_anno <- NULL
+    df_de_anno <- data.frame(
+      doc_id = 1,
+      paragraph_id = 1,
+      sentence_id = 1,
+      token_id = 1
+    )
   }
   
   #en
   if (!exists("df_en_anno")){
-    df_en_anno <- NULL
+    df_en_anno <- data.frame(
+      doc_id = 1,
+      paragraph_id = 1,
+      sentence_id = 1,
+      token_id = 1
+    )
   }
   
   #other
   if (!exists("df_other")){
-    df_other <- NULL
+    df_other <- ata.frame(
+      doc_id = 1,
+      paragraph_id = 1,
+      sentence_id = 1,
+      token_id = 1
+    )
   }
   
   ######################### bind data
   df_anno <- plyr::rbind.fill(df_de_anno, df_en_anno)
+  df_anno <- df_anno[!is.na(df_anno$row_id),]
   df_anno <- plyr::rbind.fill(df_anno, df_other)
+  df_anno <- df_anno[!is.na(df_anno$row_id),]
   
   ########################## fill missing values
   #missing values come from non-processed languages
