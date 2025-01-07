@@ -37,17 +37,17 @@ delab_justification <- function(df){
     i = 1:nrow(df_sentences),
     .combine = 'rbind'
   ) %do% {
-    c(df_sentences$doc_id[i], df_sentences$paragraph_id[i], df_sentences$sentence_id[i], arg_prediction(text = df_sentences$sentence[i]))
+    c(df_sentences$row_id[i], df_sentences$doc_id[i], df_sentences$paragraph_id[i], df_sentences$sentence_id[i], arg_prediction(text = df_sentences$sentence[i]))
   }
   
   #make df
   df_arguments <- data.frame(df_arguments)
   row.names(df_arguments) <- NULL
-  names(df_arguments) <- c("doc_id", "paragraph_id", "sentence_id", "argpred_0", "argpred_1")
+  names(df_arguments) <- c("row_id", "doc_id", "paragraph_id", "sentence_id", "argpred_0", "argpred_1")
   
   #bind to sentences
   df_sentences <- merge(df_sentences, df_arguments, 
-                        by = c("doc_id", "paragraph_id", "sentence_id"))
+                        by = c("row_id", "doc_id", "paragraph_id", "sentence_id"))
   
   ######################### aggregation
   #documents

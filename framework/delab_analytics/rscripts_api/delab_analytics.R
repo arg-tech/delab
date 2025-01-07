@@ -105,7 +105,7 @@ function(texts = "", analytics = "all"){
     texts_df <- data.frame(texts)
     texts_df$row_id <- seq(1, length(texts))
     
-    source("./functions/delab_embeddings.R")
+    source("./functions/delab_embeddings_tf.R")
     out_embeddings <- delab_embeddings(texts)
 
     source("./functions/delab_cosine.R")
@@ -141,7 +141,7 @@ function(texts = "", analytics = "all"){
     print("Finished analysis of justification.")
 
     #get cosine
-    source("./functions/delab_embeddings.R")
+    source("./functions/delab_embeddings_tf.R")
     out_embeddings <- delab_embeddings(texts)
 
     source("./functions/delab_cosine.R")
@@ -189,7 +189,7 @@ function(texts = ""){
   print("Finished analysis of justification.")
 
   #get cosine
-  source("./functions/delab_embeddings.R")
+  source("./functions/delab_embeddings_tf.R")
   out_embeddings <- delab_embeddings(texts)
 
   source("./functions/delab_cosine.R")
@@ -239,7 +239,7 @@ function(texts = ""){
   print("Finished analysis of justification.")
 
   #get cosine
-  source("./functions/delab_embeddings.R")
+  source("./functions/delab_embeddings_tf.R")
   out_embeddings <- delab_embeddings(texts)
 
   source("./functions/delab_cosine.R")

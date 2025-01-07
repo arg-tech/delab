@@ -16,7 +16,7 @@ RUN apt-get update -qq && apt-get install -y --no-install-recommends \
   wget \
   libsodium-dev \
   libxml2-dev \
-  default-jdk \
+  # default-jdk \
   python3 python3-dev python3-pip python3-venv \
   && rm -rf /var/lib/apt/lists/*
 
@@ -41,7 +41,7 @@ RUN install2.r --error --skipinstalled --ncpus -1 \
   && rm -rf /tmp/downloaded_packages
 
 # fix missing java library
-RUN R CMD javareconf -e
+# RUN R CMD javareconf -e
 
 # install Python packages in virtual environment
 # ENV VIRTUAL_ENV=./opt/.venv
