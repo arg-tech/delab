@@ -1,0 +1,42 @@
+#docker-compose for delab framework
+name: delab 
+
+services:
+  #analytics module
+  delab_analytics:
+    build: 
+      context: ./delab_analytics/
+      dockerfile: Dockerfile
+    container_name: analytics
+    image: delab/analytics
+    hostname: delab_analytics
+    restart: unless-stopped
+    ports: 
+      - 8840:8840
+    env_file:
+      - .env
+    environment:
+      - NLTK_DATA=/root/nltk_data/
+    networks:
+      - delab
+
+  #llm module, generic
+  delab_llm: 
+    build: 
+      context: ./delab_llm/
+      dockerfile: Dockerfile
+    container_name: llm
+    image: delab/llm
+    hostname: delab_llm
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      - HOST=0.0.0.0
+      - MODEL=/models/${LLM_MODEL}
+    networks: 
+      - delab
+
+networks:
+  delab:
+    driver: bridge

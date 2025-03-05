@@ -1,0 +1,10 @@
+torch==2.5.1
+transformers==4.46.2
+tensorflow==2.18.0
+tf-keras==2.18.0
+nltk==3.9.1
+huggingface_hub
+lexicalrichness
+spacy
+pandas
+numpy
