@@ -46,12 +46,8 @@ RUN echo 'library(reticulate)\nuse_python("/usr/bin/python3", required = TRUE)' 
 # fix missing java library
 # RUN R CMD javareconf -e
 
-# install Python packages in virtual environment
-# ENV VIRTUAL_ENV=./opt/.venv
-# RUN python3 -m venv ${VIRTUAL_ENV}
-# ENV PATH="${VIRTUAL_ENV}/bin:$PATH"
 
-COPY ./requirements.txt ./requirements.txt
+COPY ./requirements.txt ./
 RUN pip3 install -r requirements.txt --break-system-packages
 
 # set working directory
@@ -61,22 +57,20 @@ WORKDIR /delab/app
 RUN python3 -m nltk.downloader punkt 
 RUN python3 -m nltk.downloader punkt_tab
 RUN python3 -m nltk.downloader stopwords
+RUN python3 -m spacy download en_core_web_sm --break-system-packages
 
 # create directories
-RUN mkdir -p data
 
 RUN mkdir -p models
 RUN mkdir -p models/udpipe
 
 RUN mkdir -p rscripts_api
 
-# add functions
-#COPY ./data/ data/
-# COPY ./models/ models/ 
-# for dev purposes, the models are mounted as volume
 COPY ./rscripts_api/ rscripts_api/
 
 WORKDIR /delab/app/models
+COPY ./connectives_discourse_markers_PDTB.txt ./
+
 
 RUN wget "https://github.com/jwijffels/udpipe.models.ud.2.5/raw/master/inst/udpipe-ud-2.5-191206/english-ewt-ud-2.5-191206.udpipe" -P udpipe
 RUN wget "https://github.com/jwijffels/udpipe.models.ud.2.5/raw/master/inst/udpipe-ud-2.5-191206/german-gsd-ud-2.5-191206.udpipe" -P udpipe
@@ -90,14 +84,6 @@ WORKDIR /delab/app
 RUN wget -O models.zip "https://owncloud.gwdg.de/index.php/s/Y6sWdZv7G9jd117/download"
 RUN unzip models.zip
 RUN rm models.zip
-
-
-# RUN python -c "from huggingface_hub import hf_hub_download; \
-#     hf_hub_download(repo_id='Qwen/Qwen2.5-7B-Instruct-GGUF', \
-#                     filename='qwen2.5-7b-instruct-q3_k_m.gguf', \
-#                     cache_dir='/delab/app/models')"
-
-
 
 
 # make port available

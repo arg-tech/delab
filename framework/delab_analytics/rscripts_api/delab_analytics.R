@@ -56,19 +56,18 @@ function(texts = ""){
 #* @params analytics The specific analytics, either sentiment, justification, cosine, all (default)
 #* @serializer json
 function(texts = "", analytics = "all"){
+  #store order of texts
+  texts_df <- data.frame(texts)
+  texts_df$row_id <- seq(1, length(texts))
 
   #------------------get sentiments
-  if (analytics == "sentiment"){
-    
-    #store order of texts
-    texts_df <- data.frame(texts)
-    texts_df$row_id <- seq(1, length(texts))
+  if (analytics == "sentiment" || analytics == "all"){
 
     source("./functions/delab_sentiment.R")
-    out_sent <- delab_sentiment(texts)
+    sent <- delab_sentiment(texts)
 
     #sequence of rows
-    out_sent <- merge(out_sent, texts_df, by = c("texts"))
+    out_sent <- merge(sent, texts_df, by = c("texts"))
     out_sent <- out_sent[order(out_sent$row_id),]
     
     out_analytics <- out_sent
@@ -77,20 +76,16 @@ function(texts = "", analytics = "all"){
   }
 
   #------------------get justification
-  if (analytics == "justification"){
-
-    #store order of texts
-    texts_df <- data.frame(texts)
-    texts_df$row_id <- seq(1, length(texts))
+  if (analytics == "justification" || analytics == "all"){
     
     source("./functions/delab_udpipe.R")
     out_udpipe <- delab_udpipe(texts)
 
     source("./functions/delab_justification.R")
-    out_just <- delab_justification(out_udpipe)
+    just <- delab_justification(out_udpipe)
     
     #sequence of rows
-    out_just <- merge(out_just, texts_df, by = c("texts"))
+    out_just <- merge(just, texts_df, by = c("texts"))
     out_just <- out_just[order(out_just$row_id),]
 
     out_analytics = out_just
@@ -99,20 +94,16 @@ function(texts = "", analytics = "all"){
   }
 
   #------------------get cosine
-  if (analytics == "cosine"){
-
-    #store order of texts
-    texts_df <- data.frame(texts)
-    texts_df$row_id <- seq(1, length(texts))
+  if (analytics == "cosine" || analytics == "all"){
     
     source("./functions/delab_embeddings_tf.R")
     out_embeddings <- delab_embeddings(texts)
 
     source("./functions/delab_cosine.R")
-    out_cosine <- delab_cosine(out_embeddings)
+    cosine <- delab_cosine(out_embeddings)
     
     #sequence of rows
-    out_cosine <- merge(out_cosine, texts_df, by = c("texts"))
+    out_cosine <- merge(cosine, texts_df, by = c("texts"))
     out_cosine <- out_cosine[order(out_cosine$row_id),]
 
     out_analytics = out_cosine
@@ -120,43 +111,76 @@ function(texts = "", analytics = "all"){
     print("Finished analysis of cosine.")
   }
 
+  #get discourse markers
+  if (analytics == "discourse_markers" || analytics == "all"){
+    source("./functions/delab_discourse_markers.R")
+    discourse <- delab_discourse_markers(texts)
+    
+    out_discourse <- merge(discourse, texts_df, by = c("texts"))
+    out_discourse <- out_discourse[order(out_discourse$row_id),]
+    
+    out_analytics = out_discourse
+
+    print("Finished analysis of discourse markers.")
+  }
+
+  if (analytics == "epistemic_markers" || analytics == "all"){
+    source("./functions/delab_epistemic_markers.R")
+    epistemic <- delab_epistemic_markers(texts)
+    
+    out_epistemic <- merge(epistemic, texts_df, by = c("texts"))
+    out_epistemic <- out_epistemic[order(out_epistemic$row_id),]
+    
+    out_analytics = out_epistemic
+
+    print("Finished analysis of epistemic markers.")
+  }
+
+  if (analytics == "lexical_richness" || analytics == "all"){
+    source("./functions/delab_lexical_richness.R")
+    lexical <- delab_lexical_richness(texts)
+    
+    out_lexical <- merge(lexical, texts_df, by = c("texts"))
+    out_lexical <- out_lexical[order(out_lexical$row_id),]
+    
+    out_analytics = out_lexical
+
+    print("Finished analysis of lexical richness.")
+  }
+
+  if (analytics == "sentence_complexity" || analytics == "all"){
+    source("./functions/delab_sentence_complexity.R")
+    sentence_complexity <- delab_sentence_complexity(texts)
+    
+    out_sentence_complexity <- merge(sentence_complexity, texts_df, by = c("texts"))
+    out_sentence_complexity <- out_sentence_complexity[order(out_sentence_complexity$row_id),]
+    
+    out_analytics = out_sentence_complexity
+
+    print("Finished analysis of sentence complexity.")
+  }
+
+  # #------------------get self-contradiction
+  # if (analytics == "self_contradiction"){
+  #   #get self-contradiction label
+  #   source("./functions/delab_self_contradiction.R")
+  #   out_contra <- delab_self_contradiction(texts)
+  #   print("Finished analysis of self-contradiction.")
+    
+  #   #sequence of rows
+  #   out_contra <- merge(out_contra, texts_df, by = c("texts"))
+  #   out_contra <- out_contra[order(out_contra$row_id),]
+    
+  #   out_analytics = out_contra
+  # }
+
   #------------------all
   if (analytics == "all"){
+    df_list <- list(sent, just, cosine, discourse, epistemic, lexical, sentence_complexity, texts_df)
 
-    #store order of texts
-    texts_df <- data.frame(texts)
-    texts_df$row_id <- seq(1, length(texts))
+    out_analytics <- Reduce(function(x, y) merge(x, y, by = "texts"), df_list)
     
-    #get sentiment
-    source("./functions/delab_sentiment.R")
-    out_sent <- delab_sentiment(texts)
-    print("Finished analysis of sentiment.")
-
-    #get justification
-    source("./functions/delab_udpipe.R")
-    out_udpipe <- delab_udpipe(texts)
-
-    source("./functions/delab_justification.R")
-    out_just <- delab_justification(out_udpipe)
-    print("Finished analysis of justification.")
-
-    #get cosine
-    source("./functions/delab_embeddings_tf.R")
-    out_embeddings <- delab_embeddings(texts)
-
-    source("./functions/delab_cosine.R")
-    out_cosine <- delab_cosine(out_embeddings)
-    print("Finished analysis of cosine.")
-
-    #merge
-    out_one <- merge(out_sent, out_just, by = c("texts"))
-    out_two <- merge(out_one, out_cosine, by = c("texts"))
-    
-    #sequence of rows
-    out_two <- merge(out_two, texts_df, by = c("texts"))
-    out_two <- out_two[order(out_two$row_id),]
-    
-    out_analytics <- out_two
+    out_analytics <- out_analytics[order(out_analytics$row_id),]
   }
 
   #response
