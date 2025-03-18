@@ -18,4 +18,4 @@ def count_discourse_markers(text):
     for marker in discourse.itertuples():
         if marker[1] in text:
             i += text.count(marker[1])
-    return i
+    return i / len(text)

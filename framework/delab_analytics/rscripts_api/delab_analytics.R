@@ -56,9 +56,13 @@ function(texts = ""){
 #* @params analytics The specific analytics, either sentiment, justification, cosine, all (default)
 #* @serializer json
 function(texts = "", analytics = "all"){
+  texts_with_ids <- texts
+  texts <- unname(sapply(texts, function(x) strsplit(x, ";;")[[1]][2]))
+
   #store order of texts
   texts_df <- data.frame(texts)
   texts_df$row_id <- seq(1, length(texts))
+  
 
   #------------------get sentiments
   if (analytics == "sentiment" || analytics == "all"){
@@ -160,23 +164,33 @@ function(texts = "", analytics = "all"){
     print("Finished analysis of sentence complexity.")
   }
 
-  # #------------------get self-contradiction
-  # if (analytics == "self_contradiction"){
-  #   #get self-contradiction label
-  #   source("./functions/delab_self_contradiction.R")
-  #   out_contra <- delab_self_contradiction(texts)
-  #   print("Finished analysis of self-contradiction.")
+  if (analytics == "self_contradiction" || analytics == "all"){
+    source("./functions/delab_self_contradiction.R")
+    self_contradiction <- delab_self_contradiction(texts_with_ids)
     
-  #   #sequence of rows
-  #   out_contra <- merge(out_contra, texts_df, by = c("texts"))
-  #   out_contra <- out_contra[order(out_contra$row_id),]
+    out_self_contradiction <- merge(self_contradiction, texts_df, by = c("texts"))
+    out_self_contradiction <- out_self_contradiction[order(out_self_contradiction$row_id),]
     
-  #   out_analytics = out_contra
-  # }
+    out_analytics = out_self_contradiction
+
+    print("Finished analysis of self-contradiction.")
+  }
+
+  if (analytics == "ari" || analytics == "all"){
+    source("./functions/delab_ari.R")
+    ari <- delab_ari(texts)
+
+    out_ari <- merge(ari, texts_df, by = c("texts"))
+    out_ari <- out_ari[order(out_ari$row_id),]
+
+    out_analytics = out_ari
+
+    print("Finished analysis of argument relation identification.")
+  }
 
   #------------------all
   if (analytics == "all"){
-    df_list <- list(sent, just, cosine, discourse, epistemic, lexical, sentence_complexity, texts_df)
+    df_list <- list(sent, just, cosine, discourse, epistemic, lexical, sentence_complexity, self_contradiction, ari, texts_df)
 
     out_analytics <- Reduce(function(x, y) merge(x, y, by = "texts"), df_list)
     

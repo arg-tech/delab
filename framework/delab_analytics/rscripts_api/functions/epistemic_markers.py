@@ -23,4 +23,4 @@ def find_epistemic_markers(text):
     epistemic_markers_count.extend(re.findall(r'[Ii]t(?:\sjust)?\s(?:seems|feels|looks)', text)) 
     epistemic_markers_count.extend(re.findall(r'[Pp]ersonally\s(?:for\sme|speaking)', text))
     epistemic_markers_count.extend(re.findall(r'(?:[Ff]rankly|[Hh]onestly|[Cc]learly)', text))
-    return len(epistemic_markers_count)
+    return len(epistemic_markers_count)/len(text)

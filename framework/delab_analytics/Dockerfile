@@ -63,7 +63,6 @@ RUN python3 -m spacy download en_core_web_sm --break-system-packages
 
 RUN mkdir -p models
 RUN mkdir -p models/udpipe
-
 RUN mkdir -p rscripts_api
 
 COPY ./rscripts_api/ rscripts_api/
@@ -78,6 +77,7 @@ RUN wget "https://github.com/jwijffels/udpipe.models.ud.2.5/raw/master/inst/udpi
 
 RUN git clone https://huggingface.co/cardiffnlp/twitter-xlm-roberta-base
 RUN git clone https://huggingface.co/cardiffnlp/twitter-xlm-roberta-base-sentiment
+RUN git clone https://huggingface.co/raruidol/ArgumentMining-EN-ARI-AIF-RoBERTa_L
 
 WORKDIR /delab/app
 
