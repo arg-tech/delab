@@ -78,6 +78,7 @@ RUN wget "https://github.com/jwijffels/udpipe.models.ud.2.5/raw/master/inst/udpi
 RUN git clone https://huggingface.co/cardiffnlp/twitter-xlm-roberta-base
 RUN git clone https://huggingface.co/cardiffnlp/twitter-xlm-roberta-base-sentiment
 RUN git clone https://huggingface.co/raruidol/ArgumentMining-EN-ARI-AIF-RoBERTa_L
+RUN git clone https://huggingface.co/oenni11/self-contradiction
 
 WORKDIR /delab/app
 

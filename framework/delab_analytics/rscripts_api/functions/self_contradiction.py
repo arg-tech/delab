@@ -12,8 +12,8 @@ from transformers import (AutoTokenizer,
 dirname = os.getcwd()
 parentDirectory = os.path.dirname(dirname)
 
-tokenizer_path = os.path.join(parentDirectory, "models/SelfContra-model/SelfContra-tokenizer")
-model_checkpoint = os.path.join(parentDirectory, "models/SelfContra-model/SelfContra-safetensors")
+tokenizer_path = os.path.join(parentDirectory, "models/self-contradiction/SelfContra-tokenizer")
+model_checkpoint = os.path.join(parentDirectory, "models/self-contradiction/SelfContra-safetensors")
 
 """
 Self-Contradiction Prediction Function
