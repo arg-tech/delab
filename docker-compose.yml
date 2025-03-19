@@ -7,7 +7,7 @@ services:
     build: 
       context: ./delab_analytics/
       dockerfile: Dockerfile
-    container_name: analytics
+    container_name: delab_analytics
     image: delab/analytics
     hostname: delab_analytics
     restart: unless-stopped
@@ -25,7 +25,7 @@ services:
     build: 
       context: ./delab_llm/
       dockerfile: Dockerfile
-    container_name: llm
+    container_name: delab_llm
     image: delab/llm
     hostname: delab_llm
     restart: unless-stopped

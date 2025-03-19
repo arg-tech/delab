@@ -24,10 +24,6 @@ From outside the container network, the services documentation is available at
 
 - [http://localhost:8840/\_\_docs\_\_/](http://analytics.localhost/__docs__/)
 
-The analytics run on port 8840, hence to send texts (at least two posts) to the service API, forward the request to port 8840 with only the texts as json:
-
-![](images/curl.png)
-
 By default, the complete pipeline is run (see above), i.e.. 
 
 - generate features for prediction (currently sentiment, justification, cosine similarity)
@@ -37,15 +33,17 @@ By default, the complete pipeline is run (see above), i.e..
 ## Examples
 
 - `curl -X 'GET' 'http://localhost:8840/alive'`
-- `curl -X 'POST' 'http://localhost:8840/input' -H 'Content-Type: application/json' -d '{"texts":["this is a text", "and yet another one"]}'`
-- `curl -X 'POST' 'http://localhost:8840/analytics' -H 'Content-Type: application/json' -d '{"texts":["this is a text", "and yet another one"]}'`
-	+ sentiments: `curl -X 'POST' 'http://localhost:8840/analytics?analytics=sentiment' -H 'Content-Type: application/json' -d '{"texts":["this is a text", "and yet another one"]}'`
-	+ justification: `curl -X 'POST' 'http://localhost:8840/analytics?analytics=justification' -H 'Content-Type: application/json' -d '{"texts":["this is a text", "and yet another one"]}'`
-	+ cosine: `curl -X 'POST' 'http://localhost:8840/analytics?analytics=cosine' -H 'Content-Type: application/json' -d '{"texts":["this is a text", "and yet another one"]}'`
+- `curl -X 'POST' 'http://localhost:8840/input' -H 'Content-Type: application/json' -d '{"texts":["id1;;this is a text", "id2;;and yet another one"]}'`
+- `curl -X 'POST' 'http://localhost:8840/analytics' -H 'Content-Type: application/json' -d '{"texts":["id1;;this is a text", "id2;;and yet another one"]}'`
+	+ sentiments: `curl -X 'POST' 'http://localhost:8840/analytics?analytics=sentiment' -H 'Content-Type: application/json' -d '{"texts":["id1;;this is a text", "id2;;and yet another one"]}'`
+	+ justification: `curl -X 'POST' 'http://localhost:8840/analytics?analytics=justification' -H 'Content-Type: application/json' -d '{"texts":["id1;;this is a text", "id2;;and yet another one"]}'`
+	+ cosine: `curl -X 'POST' 'http://localhost:8840/analytics?analytics=cosine' -H 'Content-Type: application/json' -d '{"texts":["id1;;this is a text", "id2;;and yet another one"]}'`
 	+ `/analytics?analytics=discourse_markers`: ...
 	+ `/analytics?analytics=epistemic_markers`: ...
 	+ `/analytics?analytics=lexical_richness`: ...
 	+ `/analytics?analytics=sentence_complexity`: ...
+	+ `/analytics?analytics=self_contradiction`: ...
+	+ `/analytics?analytics=ari`: ...
 - `curl -X 'POST' 'http://localhost:8840/inference' -H 'Content-Type: application/json' -d '{"texts":["this is a text", "and yet another one"]}'`
 - `curl -X 'POST' 'http://localhost:8840/llm' -H 'Content-Type: application/json' -d '{"texts":["this is a text", "and yet another one"]}'`
 
