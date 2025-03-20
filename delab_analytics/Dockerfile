@@ -1,5 +1,5 @@
-ARG R_VERSION=4.4
 # r-ver base
+ARG R_VERSION=4.4
 FROM rocker/r-ver:${R_VERSION}
 
 # info
@@ -46,6 +46,7 @@ RUN echo 'library(reticulate)\nuse_python("/usr/bin/python3", required = TRUE)' 
 # fix missing java library
 # RUN R CMD javareconf -e
 
+
 COPY ./requirements.txt ./
 RUN pip3 install -r requirements.txt --break-system-packages
 
@@ -62,9 +63,6 @@ RUN python3 -m spacy download en_core_web_sm --break-system-packages
 
 RUN mkdir -p models
 RUN mkdir -p models/udpipe
-RUN mkdir -p rscripts_api
-
-COPY ./rscripts_api/ rscripts_api/
 
 WORKDIR /delab/app/models
 COPY ./connectives_discourse_markers_PDTB.txt ./
@@ -85,8 +83,9 @@ RUN wget -O models.zip "https://owncloud.gwdg.de/index.php/s/Y6sWdZv7G9jd117/dow
 RUN unzip models.zip
 RUN rm models.zip
 
-# Verify GPU support inside the final container
-RUN python3 -c "import tensorflow as tf; print(tf.config.list_physical_devices('GPU'))"
+RUN mkdir -p rscripts_api
+
+COPY ./rscripts_api/ rscripts_api/
 
 
 # make port available
