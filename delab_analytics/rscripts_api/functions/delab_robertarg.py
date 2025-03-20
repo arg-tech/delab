@@ -30,9 +30,23 @@ model_topics = AutoModelForSequenceClassification.from_pretrained(pathModel_topi
 
 ######################### function
 def arg_prediction(text):
+  try:
+    device = torch.device("cuda") # try to load model to GPU
+  except:
+    device = torch.device("cpu") # for stable running loading to CPU
+                                    # in case of issues with cuda / no GPU
+
   tokenizer_topics = AutoTokenizer.from_pretrained(pathTokenizer_topics)
-  model_topics = AutoModelForSequenceClassification.from_pretrained(pathFinetuned_topics)
+
   arg = tokenizer_topics(text, return_tensors="pt", padding=True, truncation=True, max_length=512)
-  arg_classification_logits = model_topics(**arg).logits
+  arg.to(device)
+
+
+  model = AutoModelForSequenceClassification.from_pretrained(pathFinetuned_topics)
+    
+  model.to(device) # load model to device
+  model.eval() # set model to eval mode
+
+  arg_classification_logits = model(**arg).logits
   arg_results = torch.softmax(arg_classification_logits, dim=1).tolist()[0]
   return arg_results

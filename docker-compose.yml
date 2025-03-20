@@ -7,6 +7,13 @@ services:
     build: 
       context: ./delab_analytics/
       dockerfile: Dockerfile
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
     container_name: delab_analytics
     image: delab/analytics
     hostname: delab_analytics
@@ -17,6 +24,8 @@ services:
       - .env
     environment:
       - NLTK_DATA=/root/nltk_data/
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=compute,utility
     networks:
       - delab
 

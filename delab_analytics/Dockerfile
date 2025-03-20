@@ -1,5 +1,5 @@
-# r-ver base
 ARG R_VERSION=4.4
+# r-ver base
 FROM rocker/r-ver:${R_VERSION}
 
 # info
@@ -46,7 +46,6 @@ RUN echo 'library(reticulate)\nuse_python("/usr/bin/python3", required = TRUE)' 
 # fix missing java library
 # RUN R CMD javareconf -e
 
-
 COPY ./requirements.txt ./
 RUN pip3 install -r requirements.txt --break-system-packages
 
@@ -85,6 +84,9 @@ WORKDIR /delab/app
 RUN wget -O models.zip "https://owncloud.gwdg.de/index.php/s/Y6sWdZv7G9jd117/download"
 RUN unzip models.zip
 RUN rm models.zip
+
+# Verify GPU support inside the final container
+RUN python3 -c "import tensorflow as tf; print(tf.config.list_physical_devices('GPU'))"
 
 
 # make port available
