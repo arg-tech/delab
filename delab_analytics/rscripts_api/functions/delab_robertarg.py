@@ -30,11 +30,10 @@ model_topics = AutoModelForSequenceClassification.from_pretrained(pathModel_topi
 
 ######################### function
 def arg_prediction(text):
-  try:
-    device = torch.device("cuda") # try to load model to GPU
-  except:
-    device = torch.device("cpu") # for stable running loading to CPU
-                                    # in case of issues with cuda / no GPU
+  
+  if torch.cuda.is_available():
+      print("Using GPU")
+  device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
   tokenizer_topics = AutoTokenizer.from_pretrained(pathTokenizer_topics)
 
