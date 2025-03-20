@@ -44,6 +44,7 @@ def predict_self_contra(input_posts):
 
     try:
         device = torch.device("cuda") # try to load model to GPU
+        print("self-contra: GPU available")
     except:
         device = torch.device("cpu") # for stable running loading to CPU
                                     # in case of issues with cuda / no GPU

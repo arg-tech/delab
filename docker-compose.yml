@@ -7,13 +7,6 @@ services:
     build: 
       context: ./delab_analytics/
       dockerfile: Dockerfile
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: all
-              capabilities: [gpu]
     container_name: delab_analytics
     image: delab/analytics
     hostname: delab_analytics
