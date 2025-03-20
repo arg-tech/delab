@@ -42,11 +42,9 @@ def predict_self_contra(input_posts):
                                                                 output_hidden_states = False, # Whether the model returns all hidden-states.
                                                                 )
 
-    # try:
-    #     device = torch.device("cuda") # try to load model to GPU
-    # except:
-    device = torch.device("cpu") # for stable running loading to CPU
-                                    # in case of issues with cuda / no GPU
+    if torch.cuda.is_available():
+        print("Using GPU")
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     
     model.to(device) # load model to device
     model.eval() # set model to eval mode
