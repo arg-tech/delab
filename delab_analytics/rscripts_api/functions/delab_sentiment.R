@@ -13,7 +13,7 @@ library("stringr")
 get_sentiments <- function(text) {
 
   #path to local model
-  path_to_model <- "./../models/twitter-xlm-roberta-base-sentiment"
+  path_to_model <- "./../models/twitter-roberta-base-sentiment-latest"
   
 
   #call Python transformers pipeline
