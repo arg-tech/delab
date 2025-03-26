@@ -24,30 +24,15 @@ Self-Contradiction Prediction Function
     from the respective checkpoints, tokenizese the input posts and runs the
     prediction model.
 """
-def predict_self_contra(input_posts):
+def predict_self_contra(input_posts, tokenizer, model, device):
 
     #input_posts = input_posts[-2:] # make sure only two posts enter the tokenizer
 
     # tokenize the input posts
-    tokenizer = AutoTokenizer.from_pretrained(tokenizer_path) # load tokenizer
     tokenized_input = tokenizer(input_posts[0], input_posts[1],
                         padding="longest", truncation=True,
                         return_token_type_ids=True,
                         return_tensors="pt") # IMPORTANT make sure to have pt tensors
-
-    model = AutoModelForSequenceClassification.from_pretrained(
-                                                                model_checkpoint, # Load model from checkpoint
-                                                                num_labels = 2, # The number of output labels--2 for binary classification.  
-                                                                output_attentions = False, # Whether the model returns attentions weights.
-                                                                output_hidden_states = False, # Whether the model returns all hidden-states.
-                                                                )
-
-    if torch.cuda.is_available():
-        print("Using GPU")
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    
-    model.to(device) # load model to device
-    model.eval() # set model to eval mode
 
     with torch.no_grad():
         tokenized_input.to(device) # make sure that input is loaded to the same device as the model
@@ -60,7 +45,7 @@ def predict_self_contra(input_posts):
                     attention_mask=attention_mask)
         
         logits = output.logits # extract logits
-        predictions =logits.argmax(-1)[0] # transform logits to integer output
+        predictions = logits.argmax(-1)[0] # transform logits to integer output
 
         return predictions # return obtained integer output 1 self-contra
                             # 0 no self-contra
@@ -98,14 +83,24 @@ def analyse_conversation(input_posts, sep=";;"):
         # as there can't be self-contradictions
         if len(target_indices) == 0:
             return 0
-
         else: # iterate over all posts of the target speaker
+            tokenizer = AutoTokenizer.from_pretrained(tokenizer_path) # load tokenizer
+            model = AutoModelForSequenceClassification.from_pretrained(
+                                                                        model_checkpoint, # Load model from checkpoint
+                                                                        num_labels = 2, # The number of output labels--2 for binary classification.  
+                                                                        output_attentions = False, # Whether the model returns attentions weights.
+                                                                        output_hidden_states = False, # Whether the model returns all hidden-states.
+                                                                        )
+
+            device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+            
+            model.to(device) # load model to device
+            model.eval() # set model to eval mode
+            
             for idx in target_indices:
                 post1 = posts[idx]
                 post2 = posts[-1] # the last post in the history is always the second post to analyse
-                #print(post1, post2)
-                prediction = predict_self_contra([post1, post2]) # predict whether there is a self-contradiction
-                #print(prediction)
+                prediction = predict_self_contra([post1, post2], tokenizer, model, device) # predict whether there is a self-contradiction
 
                 # since only one self-contradiction may make a moderation necessary 
                 # we return as soon as there is one self-contradiction between the 

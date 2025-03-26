@@ -13,24 +13,19 @@ library("stringr")
 get_sentiments <- function(text) {
 
   #path to local model
-  path_to_model <- "./../models/twitter-roberta-base-sentiment-latest/"
+  path_to_model <- "./../models/twitter-roberta-base-sentiment-latest"
+  
 
   #call Python transformers pipeline
   transformers <- reticulate::import("transformers")
 
-  possibleError <- tryCatch(
-    pipe_sent <- transformers$pipeline("sentiment-analysis",
-                                       model = path_to_model,
-                                       top_k = 3L),
-    error = function(e) e
-  )
-  if (inherits(possibleError, "error")){
+  torch <- reticulate::import("torch")
+  device <- if (torch$cuda$is_available()) torch$device("cuda:0") else torch$device("cpu")
 
-    pipe_sent <- transformers$pipeline("sentiment-analysis",
-                                       model="cardiffnlp/twitter-roberta-base-sentiment-latest", 
-                                       top_k = 3L)
-
-  }
+  pipe_sent <- transformers$pipeline("sentiment-analysis",
+                                      model = path_to_model,
+                                      device = device,
+                                      top_k = 3L)
   
   #apply pipeline
   out <- pipe_sent(text)
