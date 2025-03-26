@@ -22,6 +22,9 @@ RUN apt-get update -qq && apt-get install -y --no-install-recommends \
   python3 python3-dev python3-pip python3-venv \
   && rm -rf /var/lib/apt/lists/*
 
+COPY ./requirements.txt .
+RUN pip3 install -r requirements.txt --break-system-packages
+
 # install R packages
 RUN install2.r --error --skipinstalled --ncpus -1 \
   --repos https://ropensci.r-universe.dev --repos getOption \
@@ -43,12 +46,6 @@ RUN install2.r --error --skipinstalled --ncpus -1 \
   && rm -rf /tmp/downloaded_packages
 
 RUN echo 'library(reticulate)\nuse_python("/usr/bin/python3", required = TRUE)' > ~/.Rprofile
-# fix missing java library
-# RUN R CMD javareconf -e
-
-
-COPY ./requirements.txt ./
-RUN pip3 install -r requirements.txt --break-system-packages
 
 # set working directory
 WORKDIR /delab/app
@@ -59,23 +56,12 @@ RUN python3 -m nltk.downloader punkt_tab
 RUN python3 -m nltk.downloader stopwords
 RUN python3 -m spacy download en_core_web_sm --break-system-packages
 
-# create directories
-
-RUN mkdir -p models
-RUN mkdir -p models/udpipe
-
 WORKDIR /delab/app/models
+RUN mkdir -p udpipe
 COPY ./connectives_discourse_markers_PDTB.txt ./
-
 
 RUN wget "https://github.com/jwijffels/udpipe.models.ud.2.5/raw/master/inst/udpipe-ud-2.5-191206/english-ewt-ud-2.5-191206.udpipe" -P udpipe
 RUN wget "https://github.com/jwijffels/udpipe.models.ud.2.5/raw/master/inst/udpipe-ud-2.5-191206/german-gsd-ud-2.5-191206.udpipe" -P udpipe
-
-
-RUN git clone https://huggingface.co/cardiffnlp/twitter-xlm-roberta-base
-RUN git clone https://huggingface.co/cardiffnlp/twitter-xlm-roberta-base-sentiment
-RUN git clone https://huggingface.co/raruidol/ArgumentMining-EN-ARI-AIF-RoBERTa_L
-RUN git clone https://huggingface.co/oenni11/self-contradiction
 
 WORKDIR /delab/app
 
@@ -83,12 +69,16 @@ RUN wget -O models.zip "https://owncloud.gwdg.de/index.php/s/Y6sWdZv7G9jd117/dow
 RUN unzip models.zip
 RUN rm models.zip
 
-RUN mkdir -p rscripts_api
+ENV HF_HUB_ENABLE_HF_TRANSFER=1
 
+RUN huggingface-cli download cardiffnlp/twitter-xlm-roberta-base --local-dir models/twitter-xlm-roberta-base
+RUN huggingface-cli download cardiffnlp/twitter-roberta-base-sentiment-latest --local-dir models/twitter-roberta-base-sentiment-latest
+RUN huggingface-cli download raruidol/ArgumentMining-EN-ARI-AIF-RoBERTa_L --local-dir models/ArgumentMining-EN-ARI-AIF-RoBERTa_L
+RUN huggingface-cli download oenni11/self-contradiction --local-dir models/self-contradiction
+
+RUN mkdir -p rscripts_api
 COPY ./rscripts_api/ rscripts_api/
 
-
-# make port available
 EXPOSE 8840
 
 # run plumber file

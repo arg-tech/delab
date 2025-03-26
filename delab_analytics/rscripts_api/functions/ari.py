@@ -24,12 +24,10 @@ def classify_post(input):
                                                                 output_attentions = False,
                                                                 output_hidden_states = False, 
                                                                 )
+    
+    
 
-    # try:
-    #     device = torch.device("cuda") # try to load model to GPU
-    # except:
-    device = torch.device("cpu") # for stable running loading to CPU
-                                    # in case of issues with cuda / no GPU
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     
     model.to(device)
     model.eval()
