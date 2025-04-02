@@ -50,8 +50,6 @@ delab_justification <- function(df){
   # Name columns
   names(df_arguments)[5:6] <- c("argpred_0", "argpred_1")
 
-  print(df_arguments)
-
   
   #make df
   df_arguments <- data.frame(df_arguments)

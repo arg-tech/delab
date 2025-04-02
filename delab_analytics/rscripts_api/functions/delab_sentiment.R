@@ -19,12 +19,12 @@ get_sentiments <- function(text) {
   #call Python transformers pipeline
   transformers <- reticulate::import("transformers")
 
-  # torch <- reticulate::import("torch")
-  # device <- if (torch$cuda$is_available()) torch$device("cuda:0") else torch$device("cpu")
+  torch <- reticulate::import("torch")
+  device <- if (torch$cuda$is_available()) torch$device("cuda:0") else torch$device("cpu")
 
   pipe_sent <- transformers$pipeline("sentiment-analysis",
                                       model = path_to_model,
-                                      # device = device,
+                                      device = device,
                                       top_k = 3L)
   
   #apply pipeline

@@ -62,13 +62,15 @@ function(texts = "", analytics = "all"){
   #store order of texts
   texts_df <- data.frame(texts)
   texts_df$row_id <- seq(1, length(texts))
+
+  print("Starting analysis...")
   
 
   #------------------get sentiments
   if (analytics == "sentiment" || analytics == "all"){
-
-    source("./functions/delab_sentiment.R")
-    sent <- delab_sentiment(texts)
+    
+    source_python("./functions/sentiment.py")
+    sent <- delab_sentiment_py(texts)
 
     #sequence of rows
     out_sent <- merge(sent, texts_df, by = c("texts"))
@@ -100,11 +102,19 @@ function(texts = "", analytics = "all"){
   #------------------get cosine
   if (analytics == "cosine" || analytics == "all"){
     
-    source("./functions/delab_embeddings_tf.R")
-    out_embeddings <- delab_embeddings(texts)
+    source_python("./functions/embeddings.py")
+    out_embeddings <- delab_embeddings_py(texts)
+
+    # source("./functions/delab_embeddings_tf.R")
+    # out_embeddings <- delab_embeddings(texts)
 
     source("./functions/delab_cosine.R")
     cosine <- delab_cosine(out_embeddings)
+
+    # source("./functions/delab_cosine.R")
+    # cosine_py <- delab_cosine(out_embeddings_py)
+    # print(cosine)
+    # print(cosine_py)
     
     #sequence of rows
     out_cosine <- merge(cosine, texts_df, by = c("texts"))
