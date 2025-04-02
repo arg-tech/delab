@@ -33,12 +33,25 @@ delab_justification <- function(df){
   
   ######################### make predictions
   #use finetuned model
-  df_arguments <- foreach(
-    i = 1:nrow(df_sentences),
-    .combine = 'rbind'
-  ) %do% {
-    c(df_sentences$row_id[i], df_sentences$doc_id[i], df_sentences$paragraph_id[i], df_sentences$sentence_id[i], arg_prediction(text = df_sentences$sentence[i]))
-  }
+  # Call Python function once on all sentences
+  predictions <- justifications(df_sentences$sentence)  # <- assumes list of [arg0, arg1]# Flatten one level if predictions is list(list(c(x, y)), ...)
+  flat_predictions <- lapply(predictions, function(x) unlist(x))
+
+  # Now unpack correctly into a data frame
+  pred_df <- as.data.frame(do.call(rbind, flat_predictions))
+  names(pred_df) <- c("argpred_0", "argpred_1")
+
+  # Bind it to the sentence metadata
+  df_arguments <- cbind(
+    df_sentences[, c("row_id", "doc_id", "paragraph_id", "sentence_id")],
+    pred_df
+  )
+
+  # Name columns
+  names(df_arguments)[5:6] <- c("argpred_0", "argpred_1")
+
+  print(df_arguments)
+
   
   #make df
   df_arguments <- data.frame(df_arguments)
