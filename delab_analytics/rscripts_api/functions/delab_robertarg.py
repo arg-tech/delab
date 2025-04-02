@@ -18,7 +18,7 @@ pathTokenizer_topics = os.path.join(parentDirectory, "models/twitter-xlm-roberta
 
 ######################### model
 #model path
-pathFinetuned_topics = os.path.join(parentDirectory, "models/twitter-xlm-roberta-base-justification")
+pathFinetuned_topics = os.path.join(parentDirectory, "models/ -justification")
 
 if os.path.exists(pathFinetuned_topics):
   pathModel_topics = pathFinetuned_topics

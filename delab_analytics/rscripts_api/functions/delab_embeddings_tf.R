@@ -52,14 +52,14 @@ delab_embeddings <- function(texts){
   #call Python transformers pipeline
   transformers <- reticulate::import("transformers")
 
-  torch <- reticulate::import("torch")
-  device <- if (torch$cuda$is_available()) torch$device("cuda:0") else torch$device("cpu")
+  # torch <- reticulate::import("torch")
+  # device <- if (torch$cuda$is_available()) torch$device("cuda:0") else torch$device("cpu")
   
   #use pipeline
   pipe_embd <- transformers$pipeline(
     'feature-extraction', 
     framework="pt",
-    device = device,
+    # device = device,
     model = path_to_model
   )
   
