@@ -56,6 +56,8 @@ function(texts = ""){
 #* @params analytics The specific analytics, either sentiment, justification, cosine, all (default)
 #* @serializer json
 function(texts = "", analytics = "all"){
+
+
   texts_with_ids <- texts
   texts <- unname(sapply(texts, function(x) strsplit(x, ";;")[[1]][2]))
 
@@ -207,6 +209,15 @@ function(texts = "", analytics = "all"){
     out_analytics <- out_analytics[order(out_analytics$row_id),]
   }
 
+  library(reticulate)
+  torch <- import("torch")
+
+  if (torch$cuda$is_available()){
+    torch$cuda$empty_cache()
+    torch$cuda$ipc_collect()
+  }
+
+
   #response
   list(df = out_analytics)
 }
@@ -218,6 +229,13 @@ function(texts = "", analytics = "all"){
 #* @post /inference
 #* @serializer json
 function(texts = ""){
+  # library(reticulate)
+  # torch <- import("torch")
+
+  # if (torch$cuda$is_available()){
+  #   torch$cuda$empty_cache()
+  #   torch$cuda$ipc_collect()
+  # }
 
   #store order of texts
   texts_df <- data.frame(texts)
@@ -256,9 +274,17 @@ function(texts = ""){
   source("./functions/delab_inference.R")
   out_inference <- delab_inference(out_two)
 
+  library(reticulate)
+  torch <- import("torch")
+
+  if (torch$cuda$is_available()){
+    torch$cuda$empty_cache()
+    torch$cuda$ipc_collect()
+  }
+  
+
   #response
   list(df = out_inference)
-
 }
 
 
@@ -268,6 +294,13 @@ function(texts = ""){
 #* @post /llm
 #* @serializer json
 function(texts = ""){
+  # library(reticulate)
+  # torch <- import("torch")
+
+  # if (torch$cuda$is_available()){
+  #   torch$cuda$empty_cache()
+  #   torch$cuda$ipc_collect()
+  # }
 
   #store order of texts
   texts_df <- data.frame(texts)
@@ -341,7 +374,14 @@ function(texts = ""){
     print(str_c("Finished llm response generation. The inferred intervention probability is ", prob_intervention, "."))
   }
 
+  library(reticulate)
+  torch <- import("torch")
+
+  if (torch$cuda$is_available()){
+    torch$cuda$empty_cache()
+    torch$cuda$ipc_collect()
+  }
+
   #response
   list(df = data.frame(out_llm), intervention_prob = prob_intervention, features = out_two)
-
 }
