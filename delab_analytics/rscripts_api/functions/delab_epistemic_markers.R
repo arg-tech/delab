@@ -13,7 +13,7 @@ delab_epistemic_markers <- function(texts){
   texts <- tail(texts, 2)
 
   # Apply count_discourse_markers directly
-  epistemic_counts <- sapply(texts, find_epistemic_markers)
+  epistemic_counts <- unname(sapply(texts, find_epistemic_markers))
 
   # Create a data frame with results
   df <- data.frame(

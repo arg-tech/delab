@@ -13,7 +13,7 @@ delab_lexical_richness <- function(texts){
   texts <- tail(texts, 2)
 
   # Apply count_discourse_markers directly
-  lexical_reachness <- sapply(texts, calculate_lex_richness_MTLD2)
+  lexical_reachness <- unname(sapply(texts, calculate_lex_richness_MTLD2))
 
   # Create a data frame with results
   df <- data.frame(

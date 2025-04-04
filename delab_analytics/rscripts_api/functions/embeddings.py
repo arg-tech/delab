@@ -25,18 +25,19 @@ def delab_embeddings_py(texts: List[str]) -> pd.DataFrame:
     df['row_id'] = range(1, len(df) + 1)
     df = df.tail(2).copy()
     
+    df_process = df.copy()
     # Count words
-    df['length'] = df['texts'].apply(lambda x: len(re.findall(r'\S+', x)))
+    df_process['length'] = df['texts'].apply(lambda x: len(re.findall(r'\S+', x)))
     switch_length = 0
 
     # Sentence split if any text is long
-    if any(df['length'] >= 30):
+    if any(df_process['length'] >= 30):
         switch_length = 1
         split_rows = []
-        for _, row in df.iterrows():
+        for _, row in df_process.iterrows():
             for sentence in r_style_sentence_split(row['texts']):
                 split_rows.append({'texts': sentence, 'row_id': row['row_id']})
-        df = pd.DataFrame(split_rows)
+        df_process = pd.DataFrame(split_rows)
 
     # Load model/tokenizer
     path_to_model = "./../models/twitter-xlm-roberta-base/"
@@ -47,7 +48,7 @@ def delab_embeddings_py(texts: List[str]) -> pd.DataFrame:
 
     # Generate embeddings
     embeddings = []
-    for _, row in df.iterrows():
+    for _, row in df_process.iterrows():
         emb = get_embedding(row['texts'], model, tokenizer, device)
         emb_dict = {f'emb_{i}': val for i, val in enumerate(emb)}
         embeddings.append({**row.to_dict(), **emb_dict})
@@ -58,7 +59,6 @@ def delab_embeddings_py(texts: List[str]) -> pd.DataFrame:
     if switch_length == 1:
         embed_cols = [col for col in df_embeddings.columns if col.startswith("emb_")]
         agg_embeds = df_embeddings.groupby("row_id")[embed_cols].mean().reset_index()
-        agg_texts = df_embeddings.groupby("row_id")['texts'].apply(' '.join).reset_index()
-        df_embeddings = pd.merge(agg_texts, agg_embeds, on='row_id')
+        df_embeddings = pd.merge(df[['row_id', 'texts']], agg_embeds, on='row_id', how='left')
 
     return df_embeddings

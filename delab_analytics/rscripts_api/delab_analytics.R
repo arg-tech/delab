@@ -57,7 +57,6 @@ function(texts = ""){
 #* @serializer json
 function(texts = "", analytics = "all"){
 
-
   texts_with_ids <- texts
   texts <- unname(sapply(texts, function(x) strsplit(x, ";;")[[1]][2]))
 
@@ -107,16 +106,8 @@ function(texts = "", analytics = "all"){
     source_python("./functions/embeddings.py")
     out_embeddings <- delab_embeddings_py(texts)
 
-    # source("./functions/delab_embeddings_tf.R")
-    # out_embeddings <- delab_embeddings(texts)
-
     source("./functions/delab_cosine.R")
     cosine <- delab_cosine(out_embeddings)
-
-    # source("./functions/delab_cosine.R")
-    # cosine_py <- delab_cosine(out_embeddings_py)
-    # print(cosine)
-    # print(cosine_py)
     
     #sequence of rows
     out_cosine <- merge(cosine, texts_df, by = c("texts"))
@@ -203,6 +194,7 @@ function(texts = "", analytics = "all"){
   #------------------all
   if (analytics == "all"){
     df_list <- list(sent, just, cosine, discourse, epistemic, lexical, sentence_complexity, self_contradiction, ari, texts_df)
+    # print(df_list)
 
     out_analytics <- Reduce(function(x, y) merge(x, y, by = "texts"), df_list)
     
@@ -229,13 +221,6 @@ function(texts = "", analytics = "all"){
 #* @post /inference
 #* @serializer json
 function(texts = ""){
-  # library(reticulate)
-  # torch <- import("torch")
-
-  # if (torch$cuda$is_available()){
-  #   torch$cuda$empty_cache()
-  #   torch$cuda$ipc_collect()
-  # }
 
   #store order of texts
   texts_df <- data.frame(texts)
@@ -294,13 +279,6 @@ function(texts = ""){
 #* @post /llm
 #* @serializer json
 function(texts = ""){
-  # library(reticulate)
-  # torch <- import("torch")
-
-  # if (torch$cuda$is_available()){
-  #   torch$cuda$empty_cache()
-  #   torch$cuda$ipc_collect()
-  # }
 
   #store order of texts
   texts_df <- data.frame(texts)
