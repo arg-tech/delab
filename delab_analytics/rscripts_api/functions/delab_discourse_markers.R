@@ -14,7 +14,7 @@ delab_discourse_markers <- function(texts) {
   texts <- tail(texts, 2)
 
   # Apply count_discourse_markers directly
-  discourse_counts <- sapply(texts, count_discourse_markers)
+  discourse_counts <- unname(sapply(texts, count_discourse_markers))
 
   # Create a data frame with results
   df_discourse <- data.frame(
