@@ -2,7 +2,6 @@
 name: delab 
 
 services:
-  #analytics module
   delab_analytics:
     build: 
       context: ./delab_analytics/
@@ -21,7 +20,6 @@ services:
     networks:
       - delab
 
-  #llm module, generic
   delab_llm: 
     build: 
       context: ./delab_llm/
@@ -34,7 +32,8 @@ services:
       - .env
     environment:
       - HOST=0.0.0.0
-      - MODEL=/models/${LLM_MODEL}
+      - LLAMA_ARG_MODEL=models/${LLM_MODEL}
+      - LLAMA_ARG_PORT=8000
     networks: 
       - delab
 
