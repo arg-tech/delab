@@ -13,8 +13,8 @@ delab_sentence_complexity <- function(texts){
   texts <- tail(texts, 2)
 
   # Apply count_discourse_markers directly
-  dependency_depth <- sapply(texts, calculate_dep_length)
-  dependency_score <- sapply(texts, calculate_dep_score)
+  dependency_depth <- unname(sapply(texts, calculate_dep_length))
+  dependency_score <- unname(sapply(texts, calculate_dep_score))
 
   # Create a data frame with results
   df <- data.frame(
