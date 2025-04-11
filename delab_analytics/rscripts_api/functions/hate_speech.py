@@ -4,8 +4,6 @@
 
 ######################### packages
 import os
-#import numpy as np
-#import pandas as pd
 import torch
 #from transformers import TrainingArguments, Trainer
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
@@ -14,27 +12,28 @@ from transformers import AutoTokenizer, AutoModelForSequenceClassification
 #tokenizer path
 dirname = os.getcwd()
 parentDirectory = os.path.dirname(dirname)
-pathTokenizer_topics = os.path.join(parentDirectory, "models/twitter-xlm-roberta-base")
+pathTokenizer_topics = os.path.join(parentDirectory, "models/hateBERT")
 
 ######################### model
 #model path
-pathFinetuned_topics = os.path.join(parentDirectory, "models/twitter-xlm-roberta-base-justification")
+pathModel_topics = os.path.join(parentDirectory, "models/hateBERT")
 
-def justification(tokenizer, model, device, text):
+def hate_speech_detection(tokenizer, model, device, text):
   arg = tokenizer(text, return_tensors="pt", padding=True, truncation=True, max_length=512)
   arg.to(device)
 
-  arg_classification_logits = model(**arg).logits
-  arg_results = torch.softmax(arg_classification_logits, dim=1).tolist()
-  return arg_results
+  logits = model(**arg).logits.detach().cpu()
+  prediction = torch.argmax(logits, dim=1).item()
 
-def justifications(texts):
+  return prediction
+
+def hate_speech(texts):
   device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
   tokenizer = AutoTokenizer.from_pretrained(pathTokenizer_topics)
-  model = AutoModelForSequenceClassification.from_pretrained(pathFinetuned_topics)
+  model = AutoModelForSequenceClassification.from_pretrained(pathModel_topics, num_labels=2, output_hidden_states=False, output_attentions=False)
     
-  model.to(device) # load model to device
-  model.eval() # set model to eval mode
+  model.to(device) 
+  model.eval()
 
-  return [justification(tokenizer, model, device, text) for text in texts]
+  return [hate_speech_detection(tokenizer, model, device, text) for text in texts]

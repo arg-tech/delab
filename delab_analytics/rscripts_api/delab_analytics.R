@@ -56,7 +56,6 @@ function(texts = ""){
 #* @params analytics The specific analytics, either sentiment, justification, cosine, all (default)
 #* @serializer json
 function(texts = "", analytics = "all"){
-
   texts_with_ids <- texts
   texts <- unname(sapply(texts, function(x) strsplit(x, ";;")[[1]][2]))
 
@@ -65,11 +64,24 @@ function(texts = "", analytics = "all"){
   texts_df$row_id <- seq(1, length(texts))
 
   print("Starting analysis...")
+
+  #------------------get hate speech
+  if (analytics == "hate_speech" || analytics == "all"){    
+    source("./functions/delab_hate_speech.R")
+    hate_speech <- delab_hate_speech(texts)
+
+    #sequence of rows
+    out_hate_speech <- merge(hate_speech, texts_df, by = c("texts"))
+    out_hate_speech <- out_hate_speech[order(out_hate_speech$row_id),]
+    
+    out_analytics <- out_hate_speech
+
+    print("Finished analysis of hate speech.")
+  }
   
 
   #------------------get sentiments
   if (analytics == "sentiment" || analytics == "all"){
-    
     source_python("./functions/sentiment.py")
     sent <- delab_sentiment_py(texts)
 
@@ -194,7 +206,6 @@ function(texts = "", analytics = "all"){
   #------------------all
   if (analytics == "all"){
     df_list <- list(sent, just, cosine, discourse, epistemic, lexical, sentence_complexity, self_contradiction, ari, texts_df)
-    # print(df_list)
 
     out_analytics <- Reduce(function(x, y) merge(x, y, by = "texts"), df_list)
     
@@ -222,42 +233,102 @@ function(texts = "", analytics = "all"){
 #* @serializer json
 function(texts = ""){
 
+  texts_with_ids <- texts
+  texts <- unname(sapply(texts, function(x) strsplit(x, ";;")[[1]][2]))
+
   #store order of texts
   texts_df <- data.frame(texts)
   texts_df$row_id <- seq(1, length(texts))
+
+  print("Starting analysis...")  
   
-  #get sentiment
-  source("./functions/delab_sentiment.R")
-  out_sent <- delab_sentiment(texts)
+
+  #------------------get hate speech
+  source("./functions/delab_hate_speech.R")
+  hate_speech <- delab_hate_speech(texts)
+
+  print("Finished analysis of hate speech.")
+
+  #------------------get sentiments
+  source_python("./functions/sentiment.py")
+  sent <- delab_sentiment_py(texts)
+
   print("Finished analysis of sentiment.")
 
-  #get justification
+  #------------------get justification
   source("./functions/delab_udpipe.R")
   out_udpipe <- delab_udpipe(texts)
 
   source("./functions/delab_justification.R")
-  out_just <- delab_justification(out_udpipe)
+  just <- delab_justification(out_udpipe)
+  
+
   print("Finished analysis of justification.")
 
-  #get cosine
-  source("./functions/delab_embeddings_tf.R")
-  out_embeddings <- delab_embeddings(texts)
+  #------------------get cosine
+  source_python("./functions/embeddings.py")
+  out_embeddings <- delab_embeddings_py(texts)
 
   source("./functions/delab_cosine.R")
-  out_cosine <- delab_cosine(out_embeddings)
+  cosine <- delab_cosine(out_embeddings)
+  
+
   print("Finished analysis of cosine.")
 
-  #merge
-  out_one <- merge(out_sent, out_just, by = c("texts"))
-  out_two <- merge(out_one, out_cosine, by = c("texts"))
+  #------------------get discourse markers
+  source("./functions/delab_discourse_markers.R")
+  discourse <- delab_discourse_markers(texts)
   
-  #sequence of rows
-  out_two <- merge(out_two, texts_df, by = c("texts"))
-  out_two <- out_two[order(out_two$row_id),]
+  print("Finished analysis of discourse markers.")
+
+  #------------------get epistemic markers
+  source("./functions/delab_epistemic_markers.R")
+  epistemic <- delab_epistemic_markers(texts)
   
-  #inference
-  source("./functions/delab_inference.R")
-  out_inference <- delab_inference(out_two)
+  print("Finished analysis of epistemic markers.")
+
+  #------------------get lexical richness
+  source("./functions/delab_lexical_richness.R")
+  lexical <- delab_lexical_richness(texts)
+  
+  print("Finished analysis of lexical richness.")
+
+  #------------------get sentence complexity
+  source("./functions/delab_sentence_complexity.R")
+  sentence_complexity <- delab_sentence_complexity(texts)
+  
+  print("Finished analysis of sentence complexity.")
+
+  #------------------get self-contradiction
+  source("./functions/delab_self_contradiction.R")
+  self_contradiction <- delab_self_contradiction(texts_with_ids)
+  
+  print("Finished analysis of self-contradiction.")
+
+  #------------------get argument relation identification
+  source("./functions/delab_ari.R")
+  ari <- delab_ari(texts)
+
+  print("Finished analysis of argument relation identification.")
+
+  #------------------merging all
+  df_list <- list(sent, just, cosine, discourse, epistemic, lexical, sentence_complexity, self_contradiction, ari, texts_df)
+
+  out_analytics <- Reduce(function(x, y) merge(x, y, by = "texts"), df_list)  
+  out_analytics <- out_analytics[order(out_analytics$row_id),]
+  
+  #------------------inference
+  source_python("./functions/intervention_probability.py")
+  out_inference <- intervention_probability(out_analytics)
+
+  prob_intervention <- out_inference[[1]]
+  feats <- out_inference[[2]]
+
+  #-------------------feature importance
+  source_python("./functions/feature_importance.py")
+  out_importance <- feature_importance(out_analytics)
+
+  print("Finished analysis of feature importance.")
 
   library(reticulate)
   torch <- import("torch")
@@ -269,7 +340,7 @@ function(texts = ""){
   
 
   #response
-  list(df = out_inference)
+  list(intervention_probability = prob_intervention, features = feats, feature_importance = out_importance)
 }
 
 
@@ -280,46 +351,102 @@ function(texts = ""){
 #* @serializer json
 function(texts = ""){
 
+  texts_with_ids <- texts
+  texts <- unname(sapply(texts, function(x) strsplit(x, ";;")[[1]][2]))
+
   #store order of texts
   texts_df <- data.frame(texts)
   texts_df$row_id <- seq(1, length(texts))
+
+  print("Starting analysis...")
   
-  #get sentiment
-  source("./functions/delab_sentiment.R")
-  out_sent <- delab_sentiment(texts)
+
+  #------------------get hate speech
+  source("./functions/delab_hate_speech.R")
+  hate_speech <- delab_hate_speech(texts)
+
+  print("Finished analysis of hate speech.")
+
+  #------------------get sentiments
+  source_python("./functions/sentiment.py")
+  sent <- delab_sentiment_py(texts)
+
+
   print("Finished analysis of sentiment.")
 
-  #get justification
+  #------------------get justification
   source("./functions/delab_udpipe.R")
   out_udpipe <- delab_udpipe(texts)
 
   source("./functions/delab_justification.R")
-  out_just <- delab_justification(out_udpipe)
+  just <- delab_justification(out_udpipe)
+  
+
   print("Finished analysis of justification.")
 
-  #get cosine
-  source("./functions/delab_embeddings_tf.R")
-  out_embeddings <- delab_embeddings(texts)
+  #------------------get cosine
+  source_python("./functions/embeddings.py")
+  out_embeddings <- delab_embeddings_py(texts)
 
   source("./functions/delab_cosine.R")
-  out_cosine <- delab_cosine(out_embeddings)
+  cosine <- delab_cosine(out_embeddings)
+  
+
   print("Finished analysis of cosine.")
 
-  #merge
-  out_one <- merge(out_sent, out_just, by = c("texts"))
-  out_two <- merge(out_one, out_cosine, by = c("texts"))
+  #------------------get discourse markers
+  source("./functions/delab_discourse_markers.R")
+  discourse <- delab_discourse_markers(texts)
   
-  #sequence of rows
-  out_two <- merge(out_two, texts_df, by = c("texts"))
-  out_two <- out_two[order(out_two$row_id),]
-  
-  #inference
-  # source("./functions/delab_inference.R")
-  # out_inference <- delab_inference(out_two)
-  # print("Finished prediction inference.")
+  print("Finished analysis of discourse markers.")
 
-  print("Inference prediction dummy is used. LLM response is always generated.")
-  prob_intervention <- 0.9
+  #------------------get epistemic markers
+  source("./functions/delab_epistemic_markers.R")
+  epistemic <- delab_epistemic_markers(texts)
+  
+  print("Finished analysis of epistemic markers.")
+
+  #------------------get lexical richness
+  source("./functions/delab_lexical_richness.R")
+  lexical <- delab_lexical_richness(texts)
+  
+  print("Finished analysis of lexical richness.")
+
+  #------------------get sentence complexity
+  source("./functions/delab_sentence_complexity.R")
+  sentence_complexity <- delab_sentence_complexity(texts)
+  
+  print("Finished analysis of sentence complexity.")
+
+  #------------------get self-contradiction
+  source("./functions/delab_self_contradiction.R")
+  self_contradiction <- delab_self_contradiction(texts_with_ids)
+  
+  print("Finished analysis of self-contradiction.")
+
+  #------------------get argument relation identification
+  source("./functions/delab_ari.R")
+  ari <- delab_ari(texts)
+
+  print("Finished analysis of argument relation identification.")
+
+  #------------------merging all
+  df_list <- list(sent, just, cosine, discourse, epistemic, lexical, sentence_complexity, self_contradiction, ari, texts_df)
+
+  out_analytics <- Reduce(function(x, y) merge(x, y, by = "texts"), df_list)  
+  out_analytics <- out_analytics[order(out_analytics$row_id),]
+  
+  #------------------inference
+  source_python("./functions/intervention_probability.py")
+  out_inference <- intervention_probability(out_analytics)
+
+  prob_intervention <- out_inference[[1]]
+  feats <- out_inference[[2]]
+
+  #-------------------feature importance
+  source_python("./functions/feature_importance.py")
+  out_importance <- feature_importance(out_analytics)
+
 
   #check if user provides intervention threshold
   if (Sys.getenv("INTERVENTION_THRESHOLD") == ""){
@@ -332,7 +459,6 @@ function(texts = ""){
 
   #stop if intervention threshold is larger than intervention probability
   if (intervention_thresh > prob_intervention){
-
     if(Sys.getenv("INTERVENTION_THRESHOLD") == ""){
       out_llm <- str_c("The inferred intervention probability ", prob_intervention,
                        "\nis smaller than the pre-defined threshold of .5",
@@ -345,8 +471,6 @@ function(texts = ""){
       print("No llm response is generated.")
     }
   } else {
-
-    #run llm service
     source("./functions/delab_llm.R")
     out_llm <- delab_llm(texts)
     print(str_c("Finished llm response generation. The inferred intervention probability is ", prob_intervention, "."))
@@ -361,5 +485,5 @@ function(texts = ""){
   }
 
   #response
-  list(df = data.frame(out_llm), intervention_prob = prob_intervention, features = out_two)
+  list(df = data.frame(out_llm), intervention_probability = prob_intervention, features = feats, feature_importance = out_importance)
 }

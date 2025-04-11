@@ -75,6 +75,11 @@ RUN huggingface-cli download cardiffnlp/twitter-xlm-roberta-base --local-dir mod
 RUN huggingface-cli download cardiffnlp/twitter-roberta-base-sentiment-latest --local-dir models/twitter-roberta-base-sentiment-latest
 RUN huggingface-cli download raruidol/ArgumentMining-EN-ARI-AIF-RoBERTa_L --local-dir models/ArgumentMining-EN-ARI-AIF-RoBERTa_L
 RUN huggingface-cli download oenni11/self-contradiction --local-dir models/self-contradiction
+RUN huggingface-cli download GroNLP/hateBERT --local-dir models/hateBERT
+
+RUN pip3 install scikit-learn shap --break-system-packages
+
+COPY ./MLP models/MLP
 
 RUN mkdir -p rscripts_api
 COPY ./rscripts_api/ rscripts_api/
