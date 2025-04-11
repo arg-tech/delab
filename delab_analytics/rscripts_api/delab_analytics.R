@@ -70,8 +70,6 @@ function(texts = "", analytics = "all"){
     source("./functions/delab_hate_speech.R")
     hate_speech <- delab_hate_speech(texts)
 
-    print(hate_speech)
-      
     #sequence of rows
     out_hate_speech <- merge(hate_speech, texts_df, by = c("texts"))
     out_hate_speech <- out_hate_speech[order(out_hate_speech$row_id),]
@@ -207,7 +205,7 @@ function(texts = "", analytics = "all"){
 
   #------------------all
   if (analytics == "all"){
-    df_list <- list(hate_speech, sent, just, cosine, discourse, epistemic, lexical, sentence_complexity, self_contradiction, ari, texts_df)
+    df_list <- list(sent, just, cosine, discourse, epistemic, lexical, sentence_complexity, self_contradiction, ari, texts_df)
 
     out_analytics <- Reduce(function(x, y) merge(x, y, by = "texts"), df_list)
     
