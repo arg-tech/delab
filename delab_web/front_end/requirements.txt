@@ -1,3 +1,0 @@
-django
-delab-trees
-pandas

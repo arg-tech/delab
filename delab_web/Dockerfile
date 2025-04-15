@@ -11,10 +11,10 @@ RUN apt-get update && apt-get install -y \
 
 # Install Python dependencies
 COPY requirements.txt .
-RUN pip install --upgrade pip && pip install -r requirements.txt
+RUN pip install --upgrade pip && pip install -r requirements.txt --break-system-packages
 
 # Copy project
-COPY . .
+COPY ./front_end/ ./front_end/
 
 # Run Django server
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+CMD ["python", "front_end/django_chatbot/manage.py", "runserver", "0.0.0.0:8840"]

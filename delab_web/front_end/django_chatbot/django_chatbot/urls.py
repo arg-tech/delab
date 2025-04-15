@@ -16,9 +16,13 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from .views import analytics_proxy, inference_proxy, llm_proxy
 
 urlpatterns = [
     path('', include("chatbot.urls")),
     #path('download', include("download.urls")),
     path('admin/', admin.site.urls),
+    path('analytics', analytics_proxy),
+    path('inference', inference_proxy),
+    path('llm', llm_proxy)
 ]

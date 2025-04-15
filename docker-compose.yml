@@ -37,8 +37,11 @@ services:
 
   delab_web:
     build:
-      context: .
+      context: ./delab_web/
       dockerfile: Dockerfile
+    container_name: delab_web
+    image: delab/web
+    hostname: delab_web
     ports:
       - 8840:8840
     depends_on:

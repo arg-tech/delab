@@ -86,6 +86,4 @@ def feature_importance(df):
         'importance': shap_values
     }).sort_values(by='importance', ascending=False).set_index('feature').T
 
-    print(shap_importance_df)
-
     return shap_importance_df

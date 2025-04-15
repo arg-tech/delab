@@ -75,16 +75,14 @@ RUN huggingface-cli download cardiffnlp/twitter-xlm-roberta-base --local-dir mod
 RUN huggingface-cli download cardiffnlp/twitter-roberta-base-sentiment-latest --local-dir models/twitter-roberta-base-sentiment-latest
 RUN huggingface-cli download raruidol/ArgumentMining-EN-ARI-AIF-RoBERTa_L --local-dir models/ArgumentMining-EN-ARI-AIF-RoBERTa_L
 RUN huggingface-cli download oenni11/self-contradiction --local-dir models/self-contradiction
-RUN huggingface-cli download GroNLP/hateBERT --local-dir models/hateBERT
-
-RUN pip3 install scikit-learn shap --break-system-packages
+RUN huggingface-cli download facebook/roberta-hate-speech-dynabench-r4-target --local-dir models/roberta-hate-speech
 
 COPY ./MLP models/MLP
 
 RUN mkdir -p rscripts_api
 COPY ./rscripts_api/ rscripts_api/
 
-EXPOSE 8840
+# EXPOSE 8840
 
 # run plumber file
 ENTRYPOINT ["R", "-e", "pr <- plumber::plumb(rev(commandArgs())[1]); args <- list(host = '0.0.0.0', port = 8840); if (packageVersion('plumber') >= '1.0.0') { pr$setDocs(TRUE) } else { args$swagger <- TRUE }; do.call(pr$run, args)"]
