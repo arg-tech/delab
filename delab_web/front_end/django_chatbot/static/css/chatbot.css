@@ -1,0 +1,363 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+        /* General Styling */
+        body {
+            font-family: 'Segoe UI', Inter, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            font-size: 20px; /* Default font size for everything */
+        }
+        .normal-header {
+            background-color: #006699;
+            height: 30px;
+            width: 100%;
+            padding: 20px;
+            flex-shrink: 1;
+        }
+
+        /* Header Styling */
+        h1 {
+            background-color: #ffffff;
+            color: #484b4e;
+            padding: 10px;
+            margin: 0;
+            display: flex;
+            justify-content: center; /* Überschrift bleibt zentriert */
+            align-items: center;
+            font-size: 24px;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .header-content {
+            display: flex;
+            width: 100%;
+            justify-content: space-between; /* Elemente gleichmäßig verteilen */
+            align-items: center;
+        }
+
+        /* Linkes Logo */
+        .header-left {
+            flex: 1;
+            display: flex;
+            justify-content: flex-start;
+            padding-left: 20px;
+        }
+
+        /* Überschrift in der Mitte */
+        .header-center {
+            flex: 1;
+            text-align: center;
+        }
+
+        /* Rechtes Logo (Volkswagen-Stiftung) */
+        .header-right {
+            flex: 1;
+            display: flex;
+            justify-content: flex-end;
+            padding-right: 20px;
+        }
+
+        /* Logo Styling */
+        .header-logo {
+            height: 60px;
+            width: auto;
+        }
+
+        /* Optional: Volkswagen-Logo kleiner machen, falls zu groß */
+        .volkswagen-logo {
+            height: 50px; /* Anpassen nach Bedarf */
+        }
+
+        h3 {
+            font-size: 22px;
+        }
+
+        /* Layout */
+        .main-container {
+            display: flex;
+            width: 100%;
+            flex:1;
+
+        }
+
+        /* Chat Section */
+        .chat-container {
+            width: 70%;
+            padding: 20px;
+        }
+
+        .chat-box {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .chat-message {
+            display: flex;
+            align-items: flex-start; /* Startet oben für eine saubere Linie */
+            gap: 3px;/* Abstand zwischen Bild und Text */
+            position: relative; /* Nötig für die Linie */
+
+        }
+
+        .chat-message img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+        }
+
+        /* 💡 Die Linie */
+        .chat-message::before {
+            content: "";
+            position: absolute;
+            width: 2px;
+            background-color: rgb(212, 219, 226); /* Grauton wie in deinem Beispiel */
+            top: 50px; /* Startpunkt unter dem Profilbild */
+            bottom: -20px; /* Reicht etwas tiefer, um die Verbindung klarzumachen */
+            left: 25px; /* Exakt in der Mitte des Profilbilds */
+        }
+
+        /* 🔹 Entfernt die Linie bei der letzten Nachricht */
+        .chat-box .chat-message:last-child::before {
+            display: none;
+        }
+
+        .chat-text {
+            background-color: white;
+            padding: 10px;
+            max-width: 100%;
+            word-wrap: break-word;
+            font-size: 20px;
+            color: #484b4e;
+        }
+
+        .chat-message strong {
+            display: block;
+            color: #006699;
+            margin-bottom: 5px; /* Absatz nach "You" bzw. "Chatbot" */
+        }
+
+        .chat-box .chat-message:first-child .chat-line {
+            display: none;
+        }
+
+
+        /* Loading Dots */
+        .loading-dots {
+            display: none;
+            font-size: 20px;
+            color: #555;
+            margin-top: 10px;
+            text-align: left;
+            padding-left: 10px;
+        }
+
+        /* Response Form */
+        .response-container {
+            margin-top: 20px;
+        }
+
+        .response-box {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        #user_input {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 20px;
+            font-size: 20px; /* Input field at 20px */
+            background: #f8f8f8;
+        }
+
+        #postButton {
+            padding: 10px 15px;
+            background-color: #FFC300;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 20px; /* Post button at 20px */
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+
+        #postButton:hover {
+            background-color: #006699;
+        }
+
+        /* Upload Section (Unchanged) */
+        .upload-container {
+            width: 30%;
+            padding: 20px;
+
+            margin-right: 25px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            position: relative;
+
+        }
+        .upload-wrapper {
+            padding:20px;
+            display: flex;
+            flex-direction: column; /* Stack vertically */
+            gap: 20px; /* Optional spacing between upload and analytics */
+            width: 100%;
+            align-items: center;
+        }
+
+        .upload-box {
+            background: white;
+            padding:20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .upload-box h3 {
+            margin-bottom: 10px;
+        }
+
+        .file-input-wrapper {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: center;
+        }
+
+        input[type="file"] {
+            width: 90%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            font-size: 14px; /* Keep original */
+            background: #f8f8f8;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        #uploadButton {
+            width: 90%;
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #FFC300;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px; /* Keep original */
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+
+        #uploadButton:hover {
+            background-color: #006699;
+        }
+        .analytics-container {
+            display: flex;
+            gap: 10px; /* Abstand zwischen den beiden Boxen */
+            width: 100%;
+            box-sizing: border-box;
+            padding: 20px;
+            margin-top: 20px;
+            bottom: 0;
+            position: absolute;
+        }
+
+        .analytics-box {
+            background: #dde5f3; /* grau */
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            text-align: left;
+            width: 100%;
+            margin-top: 0px;
+            font-size: 16px;
+            color: #333;
+        }
+        .analytics-box h3 {
+            margin-top: 0px;
+            margin-bottom: 10px;
+        }
+        .analytics-box ul {
+           list-style-type: disc;
+        }
+        .analytics-box li {
+            margin-bottom: 5px;
+        }
+
+        .trafficlight-box {
+            flex: 0 0 20%;
+            display: flex;
+            align-items: stretch;
+            justify-content: center;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-top: -24px;
+
+        }
+
+        .trafficlight-img {
+            width: 60px;
+            height: auto;
+            object-fit: scale-down;
+        }
+
+        #chatExtras {
+             display: none;
+             width: 100%;
+             margin-top: 30px;
+        }
+        .sidebar-bottom-right {
+            display: none;
+            width: 100%; /* exakt wie Upload */
+            box-sizing: border-box;
+            padding: 0px;
+            margin-top: auto; /* etwas Abstand zur Upload-Box */
+            position: absolute;
+            bottom: 40px;
+        }
+
+        #reloadButton {
+            margin-top: 10px;
+            padding: 10px 15px;
+            background-color: #FFC300;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: background 0.3s;
+            width: 50%
+        }
+
+        #reloadButton:hover {
+            background-color: #006699;
+        }
+
+        .footer-container {
+            display: flex;
+            justify-content: center; /* Zentriert den gesamten Footer-Inhalt */
+            align-items: center;
+            gap: 10px; /* Abstand zwischen Logos */
+            padding: 20px 0;
+        }
+
+        .footer-container img {
+            height: 50px;
+            width: auto;
+        }

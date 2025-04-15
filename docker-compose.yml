@@ -10,8 +10,6 @@ services:
     image: delab/analytics
     hostname: delab_analytics
     restart: unless-stopped
-    ports: 
-      - 8840:8840
     env_file:
       - .env
     environment:
@@ -35,6 +33,17 @@ services:
       - LLAMA_ARG_MODEL=models/${LLM_MODEL}
       - LLAMA_ARG_PORT=8000
     networks: 
+      - delab
+
+  delab_web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 8840:8840
+    depends_on:
+      - delab_analytics
+    networks:
       - delab
 
 networks:
