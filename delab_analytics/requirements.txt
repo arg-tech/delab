@@ -9,3 +9,5 @@ lexicalrichness
 spacy
 pandas
 numpy
+scikit-learn
+shap
