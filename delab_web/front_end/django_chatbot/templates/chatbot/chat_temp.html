@@ -39,8 +39,18 @@
                                 <img src="{% static 'images/profile_user0.png' %}" alt="profile_user0.png">
                             {% elif author == 1 %}
                                 <img src="{% static 'images/profile_user1.png' %}" alt="profile_user1.png">
-                            {% else %}
-                                <img src="{% static 'images/woman_speech2.png' %}">
+                            {% elif author == 2 %}
+                                <img src="{% static 'images/profile_user2.png' %}" alt="profile_user2.png">
+                            {% elif author == 3 %}
+                                <img src="{% static 'images/profile_user3.png' %}" alt="profile_user3.png">
+                            {% elif author == 4 %}
+                                <img src="{% static 'images/profile_user4.png' %}" alt="profile_user4.png">
+                            {% elif author == 5 %}
+                                <img src="{% static 'images/profile_user5.png' %}" alt="profile_user5.png">
+                            {% elif author == 6 %}
+                                <img src="{% static 'images/profile_user6.png' %}" alt="profile_user6.png">
+                            <!-- {% else %}
+                                <img src="{% static 'images/woman_speech2.png' %}"> -->
                             {% endif %}
                             <div class="chat-line"></div> <!-- Linie hinzugefügt -->
                             <div class="chat-text">
@@ -83,7 +93,7 @@
                             <img src="{% static 'images/TrafficLight/TrafficLight_default.jpeg' %}" alt="Ampel" class="trafficlight-img" id="trafficLightImg">
                         </div>
                         <div id="analyticsPanel" class="analytics-box">
-                            <h3>5 Most Relevant Features</h3>
+                            <h3 id="analyticsPanelHeader">5 Most Relevant Features</h3>
                             <p id="interventionLabel" style="margin-top: 0px;"></p>
                             <ul id="analyticsList"></ul>
                         </div>
