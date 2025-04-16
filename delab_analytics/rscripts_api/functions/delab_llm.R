@@ -17,7 +17,7 @@ delab_llm <- function(texts){
   ######################### prompt
   #build prompt
   system_content <- "You are a social media moderator. Your role is to help participants in fostering a constructive and inclusive discussion." 
-  user_content <- "Given the provided conversation, formulate a helpful response. Do not address users directly. Keep your moderation intervention as brief as possible."
+  user_content <- "Given the provided conversation, formulate a response to promote a healthy conversation. Do not address users directly."
   user_content <- str_c(user_content, "\n\nThe conversation is:\n", 
                         str_c(texts, collapse = "\n"), 
                         "\n</conversation>")

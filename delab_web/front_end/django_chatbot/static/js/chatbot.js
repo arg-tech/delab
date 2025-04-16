@@ -70,17 +70,17 @@ document.getElementById('postButton').addEventListener('click', async function (
 
         interventionLabel.style.fontWeight = "bold";
         interventionLabel.style.color = interventionProb > 0.5 ? "red" : "green";
-        interventionLabel.innerText = interventionProb > 0.5 ? "Intervention needed" : "No Intervention needed";
+        interventionLabel.innerText = interventionProb > 0.5 ? "Intervention needed!" : "No Intervention needed.";
 
         const analyticsPanelHeader = document.getElementById("analyticsPanelHeader");
 
 
         const hateSpeechDetected = data.answer.hate_speech_detected[0];
         if (hateSpeechDetected) {
-            analyticsPanelHeader.innerText = "Hate speech detected";
+            analyticsPanelHeader.innerText = "Hate speech detected.";
         }
         else {
-            analyticsPanelHeader.innerText = "5 Most Relevant Features";
+            analyticsPanelHeader.innerText = "Five Most Relevant Features:";
 
             const featureValues = data.answer.features[0];
             const featureImportance = data.answer.feature_importance[0];
