@@ -381,7 +381,7 @@ function(texts = ""){
       torch$cuda$ipc_collect()
     }
 
-    list(df = data.frame(out_llm), hate_speech_detected=TRUE, intervention_probability = NULL, features = NULL, feature_importance = NULL)
+    list(df = data.frame(out_llm), hate_speech_detected=TRUE, intervention_probability = 1, features = NULL, feature_importance = NULL)
   }
   else
   {

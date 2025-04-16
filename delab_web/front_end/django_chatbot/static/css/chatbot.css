@@ -276,17 +276,25 @@
             position: absolute;
         }
 
-        .analytics-box {
-            background: #dde5f3; /* grau */
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            text-align: left;
+        /* .analytics-box {
             width: 100%;
             margin-top: 0px;
-            font-size: 16px;
             color: #333;
+        } */
+
+        .analytics-box {
+            border-radius: 12px;
+            align-items: center; 
+            display: flex;
+            flex-direction: row;
+            gap: 20px; /* optional: adds spacing between the two inner divs */
+            text-align: left;
+            font-size: 16px;
+            padding: 20px;
+            background: #dde5f3;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
+
         .analytics-box h3 {
             margin-top: 0px;
             margin-bottom: 10px;
@@ -299,15 +307,11 @@
         }
 
         .trafficlight-box {
-            flex: 0 0 20%;
             display: flex;
-            align-items: stretch;
             justify-content: center;
-            background: white;
             border-radius: 12px;
             overflow: hidden;
             margin-top: -24px;
-
         }
 
         .trafficlight-img {
@@ -353,7 +357,7 @@
             display: flex;
             justify-content: center; /* Zentriert den gesamten Footer-Inhalt */
             align-items: center;
-            gap: 10px; /* Abstand zwischen Logos */
+            gap: 50px; /* Abstand zwischen Logos */
             padding: 20px 0;
         }
 

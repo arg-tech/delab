@@ -18,7 +18,7 @@
 
             <!-- Mittige Überschrift -->
             <div class="header-center">
-                <span class="header-text">DeLab Moderation Bot</span>
+                <span class="header-text" style="font-size: 36px;">DeLab Moderation Bot</span>
             </div>
 
             <!-- Rechtes Logo (Volkswagen-Stiftung) -->
@@ -39,8 +39,18 @@
                                 <img src="{% static 'images/profile_user0.png' %}" alt="profile_user0.png">
                             {% elif author == 1 %}
                                 <img src="{% static 'images/profile_user1.png' %}" alt="profile_user1.png">
-                            {% else %}
-                                <img src="{% static 'images/woman_speech2.png' %}">
+                            {% elif author == 2 %}
+                                <img src="{% static 'images/profile_user2.png' %}" alt="profile_user2.png">
+                            {% elif author == 3 %}
+                                <img src="{% static 'images/profile_user3.png' %}" alt="profile_user3.png">
+                            {% elif author == 4 %}
+                                <img src="{% static 'images/profile_user4.png' %}" alt="profile_user4.png">
+                            {% elif author == 5 %}
+                                <img src="{% static 'images/profile_user5.png' %}" alt="profile_user5.png">
+                            {% elif author == 6 %}
+                                <img src="{% static 'images/profile_user6.png' %}" alt="profile_user6.png">
+                            <!-- {% else %}
+                                <img src="{% static 'images/woman_speech2.png' %}"> -->
                             {% endif %}
                             <div class="chat-line"></div> <!-- Linie hinzugefügt -->
                             <div class="chat-text">
@@ -79,13 +89,15 @@
                 <button id="reloadButton">Reload</button>
                 <div class="sidebar-bottom-right" id="chatExtras" style="display: none;">
                     <div class="analytics-container">
-                        <div class="trafficlight-box">
-                            <img src="{% static 'images/TrafficLight/TrafficLight_default.jpeg' %}" alt="Ampel" class="trafficlight-img" id="trafficLightImg">
-                        </div>
                         <div id="analyticsPanel" class="analytics-box">
-                            <h3>5 Most Relevant Features</h3>
-                            <p id="interventionLabel" style="margin-top: 0px;"></p>
-                            <ul id="analyticsList"></ul>
+                            <div class="trafficlight-box">
+                                <img src="{% static 'images/TrafficLight/TrafficLight_default.png' %}" alt="Ampel" class="trafficlight-img" id="trafficLightImg">
+                            </div>
+                            <div>
+                                <h3 id="analyticsPanelHeader">Five Most Relevant Features:</h3>
+                                <ul id="analyticsList"></ul>
+                                <h3 id="interventionLabel" style="margin-top: 0px;"></h3>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -104,9 +116,9 @@
     </footer>
     <script>
         const STATIC_PATHS = {
-            green: "{% static 'images/TrafficLight/TrafficLight_green.jpeg' %}",
-            yellow: "{% static 'images/TrafficLight/TrafficLight_yellow.jpeg' %}",
-            red: "{% static 'images/TrafficLight/TrafficLight_red.jpeg' %}",
+            green: "{% static 'images/TrafficLight/TrafficLight_green.png' %}",
+            yellow: "{% static 'images/TrafficLight/TrafficLight_yellow.png' %}",
+            red: "{% static 'images/TrafficLight/TrafficLight_red.png' %}",
             profileYou: "{% static 'images/profile_you.png' %}",
             profileBot: "{% static 'images/profile_bot.png' %}"
         };
